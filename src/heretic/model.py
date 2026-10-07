@@ -29,6 +29,7 @@ from transformers.generation import (
 )
 
 from .config import QuantizationMethod, Settings
+from .glm import GlmExpertViews
 from .system import empty_cache
 from .utils import Prompt, batchify, format_exception, print
 
@@ -193,6 +194,36 @@ class Model:
         # Guard against calling this method at the wrong time.
         assert isinstance(self.model, PreTrainedModel)
 
+        if self.model.config.model_type == "glm4_moe_lite":
+            if self.settings.quantization != QuantizationMethod.NONE:
+                raise ValueError(
+                    "GLM packed expert support requires quantization='none'"
+                )
+            for raw_layer in self.get_layers():
+                layer = cast(Any, raw_layer)
+                if hasattr(layer.mlp, "experts") and not isinstance(
+                    layer.mlp.experts, GlmExpertViews
+                ):
+                    layer.mlp.experts = GlmExpertViews(layer.mlp.experts)
+
+            # PEFT maps GLM's legacy down_proj module targets to packed
+            # parameter targets. Our explicit module views must bypass that
+            # conversion, so use a private module name during adapter life.
+            for raw_layer in self.get_layers():
+                layer = cast(Any, raw_layer)
+                mlps = [layer.mlp]
+                if hasattr(layer.mlp, "shared_experts"):
+                    mlps.append(layer.mlp.shared_experts)
+                if isinstance(getattr(layer.mlp, "experts", None), GlmExpertViews):
+                    mlps.extend(layer.mlp.experts.experts)
+                for mlp in mlps:
+                    if isinstance(getattr(mlp, "down_proj", None), Module):
+                        mlp.add_module("heretic_projection", mlp.down_proj)
+                        del mlp._modules["down_proj"]
+                        # Preserve the native forward's attribute lookup without
+                        # registering a second module path.
+                        object.__setattr__(mlp, "down_proj", mlp.heretic_projection)
+
         # Always use LoRA adapters for abliteration (faster reload, no weight modification).
         # Collect actual leaf module names from the model for LoRA targeting.
         # This is more robust than splitting component keys (e.g. "attn.o_proj" -> "o_proj")
@@ -228,6 +259,10 @@ class Model:
         # self.peft_config is a LoraConfig object rather than a dictionary,
         # so the result is a PeftModel rather than a PeftMixedModel.
         self.model = cast(PeftModel, get_peft_model(self.model, self.peft_config))
+
+        for module in self.model.modules():
+            if "heretic_projection" in module._modules:
+                object.__setattr__(module, "down_proj", module.heretic_projection)
 
         # PEFT initializes A randomly from the global RNG. B is zero, so this doesn't
         # change the model, but zeroing A too keeps saved adapters reproducible.
@@ -307,6 +342,15 @@ class Model:
             # Non-quantized model - can merge directly
             print("* Merging LoRA adapters into base model...")
             merged_model = self.model.merge_and_unload()
+            for module in list(merged_model.modules()):
+                if "heretic_projection" in module._modules:
+                    projection = module._modules.pop("heretic_projection")
+                    object.__delattr__(module, "down_proj")
+                    module.add_module("down_proj", projection)
+            for raw_layer in self.get_layers():
+                layer = cast(Any, raw_layer)
+                if isinstance(getattr(layer.mlp, "experts", None), GlmExpertViews):
+                    layer.mlp.experts = layer.mlp.experts.repack()
             # merge_and_unload() modifies self.model in-place, destroying LoRA adapters.
             # Mark for full reload if user switches trials later.
             self.needs_reload = True
@@ -381,7 +425,16 @@ class Model:
         return model.model.layers  # ty: ignore[unresolved-attribute, invalid-return-type]
 
     def get_layer_modules(self, layer_index: int) -> dict[str, list[Module]]:
-        layer = self.get_layers()[layer_index]
+        layer = cast(Any, self.get_layers()[layer_index])
+
+        if self.model.config.model_type == "glm4_moe_lite":
+            if self.settings.quantization != QuantizationMethod.NONE:
+                raise ValueError(
+                    "GLM packed expert support requires quantization='none'"
+                )
+            packed = getattr(layer.mlp, "experts", None)
+            if packed is not None and not isinstance(packed, GlmExpertViews):
+                layer.mlp.experts = GlmExpertViews(packed)
 
         modules = {}
 
@@ -410,8 +463,18 @@ class Model:
         with suppress(Exception):
             try_add("mlp.down_proj", layer.mlp.down_proj)  # ty: ignore[unresolved-attribute]
 
-        # Some MoE models (e.g. Qwen3).
+        # GLM shared experts.
+        with suppress(AttributeError):
+            try_add("mlp.down_proj", layer.mlp.shared_experts.down_proj)
+
+        if isinstance(
+            getattr(getattr(layer, "mlp", None), "experts", None), GlmExpertViews
+        ):
+            for expert in layer.mlp.experts.experts:
+                try_add("mlp.down_proj", expert.down_proj)
+
         with suppress(Exception):
+            # Some MoE models (e.g. Qwen3).
             for expert in layer.mlp.experts:  # ty:ignore[not-iterable, unresolved-attribute]
                 try_add("mlp.down_proj", expert.down_proj)  # ty: ignore[unresolved-attribute]
 
@@ -688,8 +751,13 @@ class Model:
                 # so this extracts the input/output at the end of each prompt.
                 # Move to CPU to decouple from device assignments, which can
                 # change between model reloads in multi-GPU configurations.
-                input = inputs[0][:, -1, :].detach().clone().cpu()
-                output = outputs[:, -1, :].detach().clone().cpu()
+                input = inputs[0]
+                output = outputs
+                if input.ndim == 3:
+                    input = input[:, -1, :]
+                    output = output[:, -1, :]
+                input = input.detach().clone().cpu()
+                output = output.detach().clone().cpu()
 
                 # The modules associated with a component (e.g. expert MLPs)
                 # are not necessarily invoked in order, nor are all of them
@@ -710,10 +778,11 @@ class Model:
                         )
                     )
 
-        self.generate(prompts, max_new_tokens=1)
-
-        for hook_handle in hook_handles:
-            hook_handle.remove()
+        try:
+            self.generate(prompts, max_new_tokens=1)
+        finally:
+            for hook_handle in hook_handles:
+                hook_handle.remove()
 
         return module_io
 

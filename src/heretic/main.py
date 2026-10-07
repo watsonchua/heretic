@@ -108,6 +108,15 @@ def obtain_export_strategy(
     Returns an export strategy, or None if cancelled.
     """
 
+    if model.model.config.model_type == "glm4_moe_lite":
+        if settings.export_strategy == ExportStrategy.ADAPTER:
+            raise ValueError(
+                "GLM expert views require merged export; standalone PEFT adapters "
+                "cannot be loaded into the native packed architecture."
+            )
+        print("GLM packed experts: exporting a merged model in the native layout.")
+        return ExportStrategy.MERGE
+
     if (
         settings.quantization == QuantizationMethod.BNB_4BIT
         and settings.export_strategy is None
