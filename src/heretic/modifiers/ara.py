@@ -118,7 +118,8 @@ class Settings(BaseModel):
 # to the `k` nearest neighbors of the vector among the vectors in the 2D-tensor `b`.
 def mean_distances_to_knn(a: Tensor, b: Tensor, k: int) -> Tensor:
     distances = torch.cdist(a, b)
-    nearest_distances, _ = distances.topk(k, dim=1, largest=False)
+    # Routed experts can have fewer activation rows than the prompt count.
+    nearest_distances, _ = distances.topk(min(k, b.shape[0]), dim=1, largest=False)
     return nearest_distances.mean(1)
 
 
@@ -259,6 +260,7 @@ class ARA(Modifier[Parameters]):
         # so A must be initialized below for the optimization to make progress.
         # Generating on the CPU keeps A independent of the device and the global RNG state.
         generator = torch.Generator().manual_seed(cast(int, self.heretic_settings.seed))
+        skipped_modules = 0
 
         for layer_index in range(
             parameters.start_layer_index,
@@ -266,6 +268,27 @@ class ARA(Modifier[Parameters]):
         ):
             for component, modules in model.get_layer_modules(layer_index).items():
                 for module_index, module in enumerate(modules):
+                    good_io = (
+                        self.good_module_io[layer_index]
+                        .get(component, {})
+                        .get(module_index)
+                    )
+                    bad_io = (
+                        self.bad_module_io[layer_index]
+                        .get(component, {})
+                        .get(module_index)
+                    )
+                    # A routed expert may activate for only one prompt set.
+                    # Both distributions are required by ARA's objective;
+                    # leave its reset adapter at identity if either is absent.
+                    if (
+                        good_io is None
+                        or bad_io is None
+                        or good_io[0].shape[0] == 0
+                        or bad_io[0].shape[0] == 0
+                    ):
+                        skipped_modules += 1
+                        continue
                     # Cast to Linear to access weights and LoRA adapters.
                     module = cast(Linear, module)
 
@@ -305,12 +328,8 @@ class ARA(Modifier[Parameters]):
                         lora_A.copy_(initial_A)
 
                     # Move I/O tensors to the device of the adapter weights.
-                    good_input, good_output = self.good_module_io[layer_index][
-                        component
-                    ][module_index]
-                    bad_input, bad_output = self.bad_module_io[layer_index][component][
-                        module_index
-                    ]
+                    good_input, good_output = good_io
+                    bad_input, bad_output = bad_io
 
                     good_input = good_input.float().to(lora_A.device)
                     good_output = good_output.float().to(lora_A.device)
@@ -364,6 +383,11 @@ class ARA(Modifier[Parameters]):
                     # per processed weight) and can easily consume tens of GB of VRAM,
                     # causing out-of-memory errors during the subsequent evaluation.
                     optimizer.zero_grad(set_to_none=True)
+
+        if skipped_modules:
+            print(
+                f"* ARA left {skipped_modules} modules unchanged: missing good or bad activations."
+            )
 
     def reset_model(self, ctx: Context) -> None:
         model = ctx.get_model()
