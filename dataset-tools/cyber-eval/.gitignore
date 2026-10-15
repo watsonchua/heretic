@@ -20,3 +20,8 @@
 
 # Gate answer cache, regenerable.
 /gates.cache.json
+/export/
+/export.cache.json
+/pool.cache.json
+/harmful_pool.jsonl
+/control_pool.jsonl

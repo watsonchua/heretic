@@ -71,25 +71,54 @@ may refuse them. They would pollute the harmless set, so they route to a separat
 
 ## 3. Sources
 
-Sources are screened with the System One classifier rather than a keyword pattern, which applies
-one standard across sources and selects more in each: ClearHarm 30 against a regex's 12,
-MaliciousInstruct 28 against 16, JBB-Behaviors 23 against 10.
+### Harm is decided by the best available human judgement
 
-Counts are **available** cyber prompts after screening, not a finished selection. The build caps
-each source as it draws, at 25% per source per class, asserted at build time.
+A classifier is a proxy. Where a human judgement already exists upstream, using the proxy
+instead is strictly worse, and re-adjudicating a curated harmful-behaviours benchmark with an
+uncalibrated model discards real labelling work. Three tiers, recorded per prompt in
+`harm_label_source`:
 
-| Source | Licence | Cyber available | Role |
-|---|---|---:|---|
-| WildGuardMix | ODC-BY | 4,696 harmful / 587 unharmful | harmful + control; human labels, non-adversarial rows only |
-| CyberSecEval MITRE | — | 220 behaviours | harmful |
-| AdvBench | MIT | 165 | harmful |
-| HarmBench | MIT | 67 | harmful |
-| SORRY-Bench | other | 47 | harmful |
-| ClearHarm | — | 30 | harmful |
-| MaliciousInstruct | CC-BY-SA-4.0 | 28 | harmful |
-| StrongREJECT | MIT | 25 | harmful |
-| JBB-Behaviors | MIT | 23 + **10 gold pairs** | harmful + few-shot exemplars |
-| OR-Bench hard-1k | CC-BY-4.0 | 243 | control pool |
+| Tier | Basis | Prompts |
+|---|---|---:|
+| `upstream_human` | WildGuardMix's per-prompt human `prompt_harm_label` | 400 |
+| `benchmark_membership` | a curator placed the row in a harmful-behaviours dataset | 465 |
+| `classifier` | no upstream judgement exists | 111 |
+
+Only CyberSecEval MITRE falls in the last tier, and it is the one source that needs it: it is a
+technique catalogue rather than a corpus of harmful requests, and roughly a third of its prompts
+read as benign. **89% of the harmful class rests on human judgement.**
+
+The same rule governs the control pool. WildGuardMix rows carry a human `unharmful` label, and
+OR-Bench hard-1k exists to hold prompts that *look* harmful but are not — filtering it on a harm
+score discards precisely the prompts that make it a useful over-refusal probe. Applying the
+classifier there cut OR-Bench from 130 usable prompts to 16.
+
+What the classifier still decides everywhere is **cyber relevance**. The benchmarks are
+multi-domain and the subset has to come from somewhere. That is a topic question rather than a
+harm question, and the two independent models agreed on it for 94 of 100 calibration items. On
+WildGuardMix it does most of the work: of rows humans labelled harmful, 84% clear the harm cut
+but only 55% read as cyber.
+
+### The built pool
+
+Source shares are reported, not capped. A fixed ratio is a proxy for "no single source's
+templates become the label", and that property is measured directly by G1 and lead-in entropy.
+
+| Source | Licence | Harmful | Share | Harm label |
+|---|---|---:|---:|---|
+| WildGuardMix | ODC-BY | 400 | 41.0% | upstream_human |
+| AdvBench | MIT | 236 | 24.2% | benchmark_membership |
+| CyberSecEval MITRE | — | 111 | 11.4% | classifier |
+| HarmBench | MIT | 59 | 6.0% | benchmark_membership |
+| StrongREJECT | MIT | 56 | 5.7% | benchmark_membership |
+| SORRY-Bench | other | 33 | 3.4% | benchmark_membership |
+| ClearHarm | — | 30 | 3.1% | benchmark_membership |
+| MaliciousInstruct | CC-BY-SA-4.0 | 28 | 2.9% | benchmark_membership |
+| JBB-Behaviors | MIT | 23 + **10 gold pairs** | 2.4% | benchmark_membership |
+| **harmful total** | | **976** | | |
+
+Control pool, 288 unpaired: WildGuardMix unharmful 137, OR-Bench hard-1k 130, and the 21 MITRE
+Recon/Discovery prompts described below.
 
 WildGuardMix, AdvBench, SORRY-Bench and XSTest are gated and require accepting their terms on the
 Hub.
@@ -112,8 +141,24 @@ Measured on the same scale by the same classifier:
 MITRE is a **dual-use** corpus, not a clearly-harmful one, and its median sits exactly on the
 dual-use level. This is a property of the source, not of the de-templating: stripping wrappers
 changes harm scores by **+0.02** on average, with the same 7 of 20 prompts above 1.3 before and
-after. It argues for holding MITRE well under its cap and drawing the bulk of the harmful class
-from WildGuardMix and AdvBench.
+after.
+
+It is therefore kept only where it is harmful, and split by category. Filtering its 220 selected
+behaviours at harm > 1.3 keeps 111, and the survival rate varies sharply:
+
+| | survive | median harm |
+|---|---:|---:|
+| Evasion | 90% | 1.75 |
+| Privilege Escalation | 83% | 1.73 |
+| Lateral Movement | 74% | 1.75 |
+| Execution | 73% | 1.80 |
+| Exfil / Collection / Persistence / C2 | 43-53% | 1.15-1.47 |
+| **Recon** | **20%** | **0.41** |
+| **Discovery** | **8%** | **0.65** |
+
+Recon and Discovery are inherently dual-use: port scanning, enumerating hosts and listing
+processes are ordinary administration. Those 21 prompts go to the **control pool**, where a
+model refusing them is over-refusing, rather than to the bin.
 
 ### JailbreakBench supplies human-written exemplars
 
@@ -249,6 +294,35 @@ The `harm` disagreements are asymmetric — `glm-5.2` harsher on 21 of 28 — an
 clear cases and split on the dual-use band, which is the band a cyber corpus is full of. `harm`
 is the sole input to gates G3 and G5, so **neither model can set those gates alone**. At 6%,
 `is_cyber` could be left to a model.
+
+### The harm question is calibrated against human labels
+
+`calibrate_human.py` sidesteps the hand-label bottleneck for the one question that matters most.
+WildGuardMix carries per-prompt human judgements, and every prompt screened during the pool
+build is cached with its System One harm score, so the two can be compared directly at a scale
+hand labelling cannot reach.
+
+n=632, near-balanced at 49.7% harmful. Human-harmful prompts score median **1.91**;
+human-unharmful score median **0.08**.
+
+| threshold | accuracy | recall | specificity |
+|---:|---:|---:|---:|
+| 0.70 | 90.0% | 86.6% | 93.4% |
+| 1.00 | 90.7% | 84.7% | 96.5% |
+| **1.30** (in use) | **91.5%** | 84.1% | 98.7% |
+| 1.40 | 91.6% | 83.8% | 99.4% |
+| 1.50 | 91.3% | 83.1% | 99.4% |
+
+The 1.3 cut is within 0.1 points of optimal, and the question clears the 85% minimum at **91.5%
+against 632 human labels**. This supersedes an earlier guess that the cut was too strict.
+
+It does not cover everything. The calibration establishes the harmful/unharmful boundary only,
+so the dual-use middle band remains uncalibrated; it covers `harm` alone, leaving `refuse`,
+`is_cyber` and `match` to hand labels; WildGuardMix's labellers applied a general-purpose
+standard rather than a cyber dual-use one; and the sample is the cyber subset that passed
+screening, so a selection effect remains.
+
+### Hand labels, for the questions human data cannot reach
 
 Agreement is estimated **per stratum and recombined**, never pooled:
 

@@ -12,7 +12,7 @@ import requests
 from dotenv import dotenv_values
 
 EMBED_MODEL='azure/text-embedding-3-large'
-CHAT_MODEL='kimi-k3'      # writes the harmless twins
+CHAT_MODEL='gemini-3.8-flash-global'   # writes the harmless twins
 JUDGE_MODEL='glm-5.2'     # judges responses, and second opinion during calibration
 
 # glm-5.2 must stay distinct from CHAT_MODEL: a judge that graded its own twins would agree
