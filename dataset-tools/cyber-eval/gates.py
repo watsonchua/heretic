@@ -10,7 +10,7 @@ failing.
 
   python gates.py --pairs pairs.jsonl
 """
-import argparse,json
+import argparse,hashlib,json
 from collections import Counter
 from pathlib import Path
 import numpy as np
@@ -18,6 +18,9 @@ import diagnostics as dg
 import llm,systemone
 
 R=Path(__file__).resolve().parent
+# Three System One calls per pair, so a few hundred pairs is a long run. Cache every answer on
+# disk keyed by (question set, text) so a failure or an interrupt costs only the current pair.
+CACHE=R/'gates.cache.json'
 T={'g1_lead_in':0.60,'g1_full_text':0.75,'g1_length_ratio':0.10,
    'g2_cosine_median':0.45,'g2_top1':0.80,'g3_twin_clear':0.95,'g4_answerable':0.90,
    'g5_harmful_harm':0.90,'g6_match':0.90,'g7_max_axis':0.40}
@@ -52,15 +55,23 @@ def run(a):
 
  # --- G3-G7, System One ----------------------------------------------------
  url,key=systemone.credentials()
+ cache=json.loads(CACHE.read_text()) if CACHE.exists() else {}
+ def ask(state,names):
+  k=hashlib.sha256(('|'.join(names)+'\x00'+state).encode()).hexdigest()
+  if k not in cache:
+   cache[k]=systemone.ask(state,names,url,key)
+  return cache[k]
  twin_harm=[];harm_harm=[];twin_refuse=[];match=[];axes=[]
  for i,p in enumerate(pairs,1):
-  t=systemone.ask(p['harmless'],['harm','refuse'],url,key)
-  h=systemone.ask(p['harmful'],['harm'],url,key)
-  m=systemone.ask(systemone.pair_state(p['harmful'],p['harmless']),['match','realised_axis'],url,key)
+  t=ask(p['harmless'],['harm','refuse'])
+  h=ask(p['harmful'],['harm'])
+  m=ask(systemone.pair_state(p['harmful'],p['harmless']),['match','realised_axis'])
   twin_harm.append(t['harm']['score']);twin_refuse.append(t['refuse']['noul'])
   harm_harm.append(h['harm']['score']);match.append(m['match']['noul'])
   axes.append(m['realised_axis']['choice'])
-  if i%25==0 or i==len(pairs):print(f'  gated {i}/{len(pairs)}')
+  if i%25==0 or i==len(pairs):
+   CACHE.write_text(json.dumps(cache));print(f'  gated {i}/{len(pairs)}',flush=True)
+ CACHE.write_text(json.dumps(cache))
  res['g3_twin_clear']=round(sum(1 for x in twin_harm if x<HARM_CLEAR)/len(pairs),4)
  res['g4_answerable']=round(sum(1 for x in twin_refuse if x<REFUSE_CLEAR)/len(pairs),4)
  res['g5_harmful_harm']=round(sum(1 for x in harm_harm if x>HARM_HARMFUL)/len(pairs),4)

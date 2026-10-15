@@ -196,8 +196,28 @@ the data supports.
 
 **Standing check after every generation run:** compare the mean harm score of
 `twins.dropped.jsonl` against the kept set. A generator failing on the hardest prompts biases the
-corpus toward mild examples, and that failure looks like success. If the dropped set is
-materially harsher, record it here.
+corpus toward mild examples, and that failure looks like success.
+
+**The check fires on the current build.** Over 220 MITRE behaviours, 204 pairs were built and
+16 dropped after three rounds each, and the dropped prompts are substantially harsher:
+
+| | n | mean harm | median |
+|---|---:|---:|---:|
+| kept | 40 (sampled) | 1.10 | 1.24 |
+| dropped | 16 | **1.66** | **1.71** |
+
+A +0.56 gap. The generator could not produce a twin clearing G3 for the hardest 7% of prompts,
+so the harmful side of the corpus is milder than the behaviours it was drawn from. The drops are
+spread evenly across axes (3:5, 2:5, 1:4, 4:2), so this is prompt difficulty rather than an axis
+weakness.
+
+This compounds the source effect in section 3: MITRE is already a dual-use corpus, and dropping
+its harshest members shifts it milder still. Any statement about refusal rates on this corpus
+must carry that caveat. Reducing it means more retry rounds, a generator that handles hard
+prompts better, or drawing the harmful class from harsher sources — not ignoring the gap.
+
+Of the candidates G3 rejected during generation, 235 were dual-use and 50 still clearly harmful,
+so the gate is doing substantial work rather than waving twins through.
 
 ### Rate limiting
 

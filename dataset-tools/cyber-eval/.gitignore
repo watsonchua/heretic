@@ -17,3 +17,6 @@
 /selected.mitre.jsonl
 /screened/
 /calibration/
+
+# Gate answer cache, regenerable.
+/gates.cache.json
