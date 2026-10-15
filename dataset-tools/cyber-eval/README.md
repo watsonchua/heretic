@@ -13,28 +13,38 @@ remaining work.
 
 ```bash
 pip install -r requirements.txt
-python download_sources.py          # pinned revisions into sources/
+python download_sources.py      # pinned revisions into sources/
 
-python detemplate.py                # strip roleplay wrappers -> cores.jsonl, templates.json
-python select_cores.py --target 220 # one prompt per behaviour, capped per source
-python screen.py --input sources/<file> --field <col> --name <id> --label harmful
-python twins.py                     # generate harmless twins -> pairs.jsonl
+python detemplate.py            # strip roleplay wrappers -> cores.jsonl, templates.json
+python select_cores.py          # one prompt per behaviour -> selected.mitre.jsonl
+python build_pool.py            # screen every source -> harmful_pool.jsonl, control_pool.jsonl
+python twins.py --prompts harmful_pool.jsonl --field text   # -> pairs.jsonl
+python export.py                # matched-order exports, splits, manifest -> export/
 ```
+
+`detemplate.py` and `select_cores.py` prepare CyberSecEval MITRE, which needs de-templating and
+behaviour-level clustering before it is usable. Every other source goes straight into
+`build_pool.py`.
 
 ## Check
 
 ```bash
-python diagnostics.py               # model-free corpus metrics
-python gates.py                     # all seven gates -> gates.json
+python diagnostics.py           # model-free corpus metrics
+python gates.py                 # all seven gates -> gates.json
 ```
 
-Calibrate the classifier before trusting any gate that depends on it:
+## Calibrate
+
+Thresholds come from data, not from guesses. The harm question calibrates against upstream human
+labels; the rest need hand labels.
 
 ```bash
-python calibrate.py sample          # stratified 100 from pairs.jsonl
-python triage.py                    # second opinion; aims the hand-label effort
+python calibrate_human.py       # harm question vs WildGuardMix human labels (n=632)
+
+python calibrate.py sample      # stratified 100 from pairs.jsonl
+python triage.py                # second opinion; aims the hand-label effort
 # hand-label calibration/to_label.jsonl
-python calibrate.py score           # per-question agreement and thresholds
+python calibrate.py score       # per-question agreement and thresholds
 ```
 
 ## Score a model
@@ -46,12 +56,18 @@ and accumulate one file per model.
 python evaluate.py --prompts pairs.jsonl --field harmful --model <id> --label harmful
 ```
 
-## Models
+## Layout
+
+| Module | Role |
+|---|---|
+| `common.py` | env, JSONL/table IO, disk cache, shared rate gate |
+| `llm.py` | LiteLLM gateway: embeddings, twin generator, response judge |
+| `systemone.py` | System One classifier and the question bank |
 
 | Model | Role |
 |---|---|
 | `clef-flash` (System One) | prompt labels, response verdicts, gates |
-| `kimi-k3` | writes the harmless twins |
+| `gemini-3.8-flash-global` | writes the harmless twins |
 | `glm-5.2` | judges responses; second opinion during calibration |
 | `azure/text-embedding-3-large` | behaviour clustering, pairing similarity |
 

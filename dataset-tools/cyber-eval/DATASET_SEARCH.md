@@ -3,20 +3,41 @@
 Revisions pinned in `download_sources.py`. Counts are measured, not taken from dataset cards.
 Selection rules and the screening method are in [METHODOLOGY.md](METHODOLOGY.md).
 
-## In use
+## In the harmful pool (976)
 
-| Source | Revision | Measured | Licence | Role |
-|---|---|---|---|---|
-| [WildGuardMix](https://huggingface.co/datasets/allenai/wildguardmix) | `d29c47f41c8b` | 88,458 rows; 4,696 harmful and 587 unharmful cyber, non-adversarial | ODC-BY, gated | harmful + control |
-| [CyberSecEval MITRE](https://huggingface.co/datasets/purpcode/CyberSecEval-MITRE) | `70213a497f4e` | 1,000 rows, 981 distinct prompts, 185 TTPs, 10 categories; 220 behaviours after collapsing | — | harmful |
-| [AdvBench](https://huggingface.co/datasets/walledai/AdvBench) | `9d4730540082` | 520 rows, 165 cyber | MIT, gated | harmful |
-| [HarmBench](https://github.com/centerforaisafety/HarmBench) | `8e1604d1171f` | 67 cybercrime_intrusion behaviours | MIT | harmful |
-| [SORRY-Bench](https://huggingface.co/datasets/sorry-bench/sorry-bench-202503) | `612a4e1f45db` | 440 rows (44 categories x 10), 47 cyber | other, gated | harmful |
-| [ClearHarm](https://huggingface.co/datasets/AlignmentResearch/ClearHarm) | `79464fb6b3c2` | 179 harmful rows, all distinct; 30 cyber | — | harmful |
-| [MaliciousInstruct](https://huggingface.co/datasets/walledai/MaliciousInstruct) | `4669349f48fe` | 100 rows, 28 cyber | CC-BY-SA-4.0 | harmful |
-| [StrongREJECT](https://github.com/alexandrasouly/strongreject) | `f7cad6c17e62` | 25 cyber seeds | MIT | harmful |
-| [JBB-Behaviors](https://huggingface.co/datasets/JailbreakBench/JBB-Behaviors) | `886acc352a31` | 100 harmful + 100 index-aligned benign; 23 cyber, 10 Malware/Hacking pairs | MIT | harmful + few-shot exemplars |
-| [OR-Bench hard-1k](https://huggingface.co/datasets/bench-llm/or-bench) | `e36d8b80e818` | 1,319 rows, 243 cyber | CC-BY-4.0 | control pool |
+`drawn` is what `build_pool.py` selected; `of` is the candidate rows it screened. Harm label
+tiers are explained in [METHODOLOGY.md](METHODOLOGY.md) section 3.
+
+| Source | Revision | Drawn | of | Share | Harm label | Licence |
+|---|---|---:|---:|---:|---|---|
+| [WildGuardMix](https://huggingface.co/datasets/allenai/wildguardmix) | `d29c47f41c8b` | 400 | 1,200 | 41.0% | upstream_human | ODC-BY, gated |
+| [AdvBench](https://huggingface.co/datasets/walledai/AdvBench) | `9d4730540082` | 236 | 520 | 24.2% | benchmark_membership | MIT, gated |
+| [CyberSecEval MITRE](https://huggingface.co/datasets/purpcode/CyberSecEval-MITRE) | `70213a497f4e` | 111 | 220 | 11.4% | classifier | — |
+| [HarmBench](https://github.com/centerforaisafety/HarmBench) | `8e1604d1171f` | 59 | 67 | 6.0% | benchmark_membership | MIT |
+| [StrongREJECT](https://github.com/alexandrasouly/strongreject) | `f7cad6c17e62` | 56 | 313 | 5.7% | benchmark_membership | MIT |
+| [SORRY-Bench](https://huggingface.co/datasets/sorry-bench/sorry-bench-202503) | `612a4e1f45db` | 33 | 440 | 3.4% | benchmark_membership | other, gated |
+| [ClearHarm](https://huggingface.co/datasets/AlignmentResearch/ClearHarm) | `79464fb6b3c2` | 30 | 179 | 3.1% | benchmark_membership | — |
+| [MaliciousInstruct](https://huggingface.co/datasets/walledai/MaliciousInstruct) | `4669349f48fe` | 28 | 100 | 2.9% | benchmark_membership | CC-BY-SA-4.0 |
+| [JBB-Behaviors](https://huggingface.co/datasets/JailbreakBench/JBB-Behaviors) | `886acc352a31` | 23 | 100 | 2.4% | benchmark_membership | MIT |
+
+JBB also supplies the **10 human-written Malware/Hacking pairs** used as few-shot exemplars for
+twin generation and as a validation set for gate G6.
+
+MITRE's 1,000 rows reduce to 220 distinct behaviours over 154 TTPs after de-templating and
+clustering, then to 111 after a harm filter. Its Recon and Discovery prompts go to the control
+pool rather than the harmful pool; see METHODOLOGY.md section 3.
+
+## In the control pool (288)
+
+| Source | Drawn | of | Why |
+|---|---:|---:|---|
+| [WildGuardMix](https://huggingface.co/datasets/allenai/wildguardmix) unharmful | 137 | 607 | human `unharmful` label, cyber, non-adversarial |
+| [OR-Bench hard-1k](https://huggingface.co/datasets/bench-llm/or-bench) | 130 | 196 | built from prompts that look harmful but are not |
+| CyberSecEval MITRE Recon/Discovery | 21 | — | enumeration and host discovery are ordinary administration |
+
+OR-Bench is kept **without** a harm filter. Its prompts are designed to read as harmful, which
+is what makes them over-refusal probes; screening them on a harm score discarded 87% of them
+(130 down to 16) before that was corrected.
 
 ClearHarm's `rep40` configuration repeats its 179 prompts 40 times and cannot supply independent
 examples; only the base configuration is used. HarmBench includes contextual prompts needing
