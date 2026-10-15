@@ -3,3 +3,17 @@
 /manifest.json
 /.venv/
 /__pycache__/
+
+# Embedding cache: 55 MB and fully regenerable by select_cores.py.
+/embeddings.json
+
+# Per-model evaluation output. Accumulates one file per model per run.
+/results/
+
+# Artefacts carrying verbatim source prompt text. Excluded for the same reason /sources/ and
+# /data/ are: this package does not have redistribution rights for all its upstream sources
+# (see METHODOLOGY.md, Licences). All are regenerable from pinned revisions.
+/cores.jsonl
+/selected.mitre.jsonl
+/screened/
+/calibration/

@@ -1,0 +1,57 @@
+{
+  "version": "v0",
+  "data": "../../cyber-eval/data",
+  "paired": false,
+  "counts": {
+    "harmful": 1085,
+    "harmless": 947,
+    "total": 2032
+  },
+  "source_share": {
+    "harmful": {
+      "purpcode/CyberSecEval-MITRE": 0.9041,
+      "HarmBench": 0.0618,
+      "StrongREJECT": 0.023,
+      "AlignmentResearch/ClearHarm": 0.0111
+    },
+    "harmless": {
+      "purpcode/CyberSecEval-FRR": 0.792,
+      "mlabonne/harmless_alpaca": 0.208
+    }
+  },
+  "max_source_share": 0.9041,
+  "g1_full_text_accuracy": 0.9027,
+  "g1_lead_in_accuracy": 0.9101,
+  "length": {
+    "harmful": {
+      "median": 42,
+      "mean": 40.5
+    },
+    "harmless": {
+      "median": 56,
+      "mean": 52.7
+    }
+  },
+  "g1_length_ratio": 0.25,
+  "lead_in_entropy": {
+    "harmful": 0.8058,
+    "harmless": 0.5214
+  },
+  "cross_label_coverage": {
+    ">=0.3": 0.0276,
+    ">=0.4": 0.0037,
+    ">=0.5": 0.0009,
+    ">=0.6": 0.0
+  },
+  "cross_label_median": 0.1515,
+  "internal_near_duplicates": {
+    "harmful": {
+      ">=0.7": 0.2636,
+      ">=0.8": 0.1364
+    },
+    "harmless": {
+      ">=0.7": 0.5945,
+      ">=0.8": 0.378
+    }
+  }
+}

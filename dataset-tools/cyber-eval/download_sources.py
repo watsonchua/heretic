@@ -13,6 +13,14 @@ REPOS = [
     ('AlignmentResearch/ClearHarm', '79464fb6b3c2a8ee925184f394f9636600349f88', 'clearharm', ['README.md', 'data/*.parquet']),
     ('purpcode/CyberSecEval-MITRE', '70213a497f4e7d5ee5b0089eac5b8d3244eba2af', 'cyberseceval-mitre', ['README.md', 'data/*.parquet']),
     ('purpcode/CyberSecEval-FRR', '73294ca390f12ebb075d763550b942875dee5fc2', 'cyberseceval-frr', ['README.md', 'data/*.parquet']),
+    # Phase 2. Revisions read from the HF API on 2026-10-15. Only ungated repos with a clear
+    # licence are listed; gated ones (AdvBench, XSTest upstream, SORRY-Bench, WildGuardMix)
+    # need an accepted agreement and a token, so they stay out of the reproducible path.
+    ('JailbreakBench/JBB-Behaviors', '886acc352a31', 'jbb-behaviors', ['README.md', 'data/*']),
+    ('walledai/MaliciousInstruct', '4669349f48fe', 'malicious-instruct', ['README.md', 'data/*']),
+    ('natolambert/xstest-v2-copy', 'b71afe2a6d10', 'xstest', ['README.md', '*.csv', 'data/*']),
+    ('bench-llm/or-bench', 'e36d8b80e818', 'or-bench', ['README.md', '*/*.parquet', 'data/*']),
+    ('AlicanKiraz0/Cybersecurity-Dataset-Fenrir-v2.1', 'fd7967ddda76', 'fenrir', ['README.md', '*.json*']),
 ]
 for repo, revision, directory, patterns in REPOS:
     subprocess.run([str(Path(sys.executable).with_name('hf')), 'download', repo,

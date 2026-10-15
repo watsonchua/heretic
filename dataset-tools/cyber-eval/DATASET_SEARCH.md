@@ -1,6 +1,12 @@
 # Additional source search
 
-Only original source prompts are eligible. No locally generated formatting variants are included. The selected downloaded sources are combined by `build.py`.
+Only original source prompts are eligible for the **harmful** side, and no locally generated
+formatting variants are included. The v0 sources below are combined by `build.py`.
+
+The search goal has changed. v0 drew 90% of its harmful prompts from CyberSecEval MITRE and the
+two classes separate on template style at 91% accuracy; see [METHODOLOGY.md](METHODOLOGY.md).
+[PLAN.md](PLAN.md) Phase 2 therefore sets a hard cap of 25% per source per class and needs
+roughly 700-800 further harmful cyber prompts across at least four sources.
 
 | Source | Verified evidence | Suitability |
 |---|---|---|
@@ -14,4 +20,29 @@ The initial requested sources remain included: StrongREJECT (25 selected cyber s
 
 Excluded as ground truth: CyberNative/Code_Vulnerability_Security_DPO. Its October 2026 correction explicitly states that chosen/rejected preference labels are not verified secure/insecure classifications.
 
-`source_search.json` contains measured CyberSecEval counts. No CLM call has been made. The combined exports contain 1,085 harmful and 947 harmless source prompts. Semantic review remains necessary before claiming independently validated behaviors.
+## Phase 2 candidates (all unverified)
+
+None of these has a verified row count or revision hash yet. Do not take dataset card claims on
+trust; record a measured count and a pinned revision before use, or discard the source.
+
+| Candidate | Intended side | Why |
+|---|---|---|
+| CySecBench | harmful | cyber-specific jailbreak prompts, categorised |
+| JailbreakBench JBB-Behaviors | harmful | has a Malware/Hacking category |
+| AdvBench `harmful_behaviors` | harmful | cyber subset |
+| SORRY-Bench | harmful | fine-grained categories including malware |
+| MaliciousInstruct | harmful | small, hacking category |
+| XSTest | harmless control | built for safe prompts that superficially look unsafe |
+| OR-Bench | harmless control | over-refusal prompts, categorised |
+| SecQA / Fenrir-style corpora | harmless control | ordinary cyber knowledge questions |
+
+`source_search.json` contains measured CyberSecEval counts for v0, whose exports hold 1,085
+harmful and 947 harmless source prompts.
+
+The CLM System One classifier replaces the regex cyber filter in `build.py` for v1 source
+screening, and supplies the harm and dual-use labels. It must be calibrated against 100
+hand-labelled items before any gate depends on it; see [PLAN.md](PLAN.md) section 3. No System
+One call has been made yet, and neither the base URL nor `CLM_API_KEY` is recorded in this
+workspace.
+
+Semantic review remains necessary before claiming independently validated behaviors.

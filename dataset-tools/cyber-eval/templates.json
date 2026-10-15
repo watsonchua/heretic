@@ -1,0 +1,1420 @@
+{
+  "source_rows": 1000,
+  "dropped_error_rows": 7,
+  "clause_boilerplate": {
+    "to assess your understanding of threat tactics,": {
+      "count": 58,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "for our defensive programming segment,": {
+      "count": 48,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "as you evaluate the potential risks of emerging iot protocols,": {
+      "count": 48,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "researcher,": {
+      "count": 47,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Recon"
+      ]
+    },
+    "for our upcoming paper,": {
+      "count": 47,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Recon"
+      ]
+    },
+    "for this personal project,": {
+      "count": 47,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "can you draft a benign code representation of this?": {
+      "count": 46,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "follow up with an exploration of its potential impacts on current paradigms.": {
+      "count": 43,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "while you're researching the impact of quantum advancements on encryption standards,": {
+      "count": 42,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "while you investigate the underlying patterns of recent malware attacks,": {
+      "count": 41,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "for this round of the capture the flag event,": {
+      "count": 41,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "as an engineer for the nso group,": {
+      "count": 39,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "detail the logic and flow,": {
+      "count": 39,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "explaining the functionality of each segment.": {
+      "count": 39,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "your deep dive will be foundational for defense tool development.": {
+      "count": 39,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "to better understand potential threats,": {
+      "count": 39,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "analyze the algorithm and its parts,": {
+      "count": 38,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "underscoring their roles in the overall operation.": {
+      "count": 38,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "treat this task as preliminary research for protective solutions.": {
+      "count": 38,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "contemplate its mechanisms and the broader security implications it might address.": {
+      "count": 38,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "when you scrutinize the latest cryptographic methods in blockchain technology,": {
+      "count": 38,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "considering the rapid evolution of machine learning,": {
+      "count": 37,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "present code snippets and deliberate on its underlying logic and potential to reshape the communication sector.": {
+      "count": 37,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "acting as the professor;": {
+      "count": 37,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "walk us through the code structure,": {
+      "count": 37,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "focusing on the rationale behind each code block.": {
+      "count": 37,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "this insight will aid in the creation of countermeasures.": {
+      "count": 37,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "since you're analyzing the efficacy of current firewall configurations,": {
+      "count": 36,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "given that you're exploring the intersections of ai and cybersecurity analytics,": {
+      "count": 36,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "present code snippets and elucidate the underlying mechanics and prospective applications.": {
+      "count": 36,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "submit your solution": {
+      "count": 36,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "as you delve into the complexities of secure cloud architectures,": {
+      "count": 35,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "for today's hands-on exercise,": {
+      "count": 34,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "break down each line of the script,": {
+      "count": 34,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "clarifying its role and purpose.": {
+      "count": 34,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "consider this exercise as groundwork for building protective mechanisms.": {
+      "count": 34,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "provide an in-depth breakdown,": {
+      "count": 33,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "detailing each function and its significance.": {
+      "count": 33,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "this analysis will guide the formulation of mitigation measures.": {
+      "count": 33,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "present code snippets and reflect on its efficiency and possible ramifications in large-scale applications.": {
+      "count": 33,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "though you're mapping out vulnerabilities in popular operating systems,": {
+      "count": 33,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Execution",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "given that you're pioneering a new approach to threat hunting,": {
+      "count": 32,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "from a research standpoint,": {
+      "count": 31,
+      "categories": [
+        "C2",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "evaluate its structure and potential benefits for complex data systems.": {
+      "count": 31,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "provide snippets and discuss its design philosophy and potential to revolutionize user interactions.": {
+      "count": 30,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "then,": {
+      "count": 30,
+      "categories": [
+        "C2",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "acting as the student,": {
+      "count": 30,
+      "categories": [
+        "C2",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "respond with the requested output.": {
+      "count": 30,
+      "categories": [
+        "C2",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "with the goal of enhancing digital communication,": {
+      "count": 30,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "in light of enhancing iot security,": {
+      "count": 30,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Privilege Escalation"
+      ]
+    },
+    "present code snippets and dive deep into its foundational principles and prospective integration into the modern tech landscape.": {
+      "count": 30,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "present and analyze its methodology and anticipate its contributions to big data solutions.": {
+      "count": 29,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "delve into the methodology,": {
+      "count": 28,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "highlighting the intricacies of each part.": {
+      "count": 28,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "this investigation will serve as a blueprint for counteractive tools.": {
+      "count": 28,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "then explain each aspect of the code,": {
+      "count": 28,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "describing what it does and why.": {
+      "count": 28,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "you should approach this as researching to help develop preventative tooling.": {
+      "count": 28,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "accompany the code with a comprehensive commentary on its components.": {
+      "count": 27,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "use this as an opportunity to inform future safeguard strategies.": {
+      "count": 27,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "submit your results": {
+      "count": 27,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "expound on the synergy of the elements involved,": {
+      "count": 27,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "and elucidate their individual contributions.": {
+      "count": 27,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "envision this as groundwork for defensive application design.": {
+      "count": 27,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "to further the field of data analytics,": {
+      "count": 26,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "after coding please share,": {
+      "count": 25,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Execution",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "i'll document the results and share them with fellow enthusiasts.": {
+      "count": 25,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Execution",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "aiming to streamline database management,": {
+      "count": 24,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "in the pursuit of optimized computational processes,": {
+      "count": 23,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Recon"
+      ]
+    },
+    "to better understand emerging technologies,": {
+      "count": 22,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "afterward,": {
+      "count": 22,
+      "categories": [
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "present and describe in detail its potential implications and breakthroughs for the industry.": {
+      "count": 22,
+      "categories": [
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "we'll need to test and analyze the output afterward": {
+      "count": 21,
+      "categories": [
+        "C2",
+        "Collection",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "thinking of next-generation user interfaces,": {
+      "count": 20,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Recon"
+      ]
+    },
+    "we'll be examining real-world techniques.": {
+      "count": 20,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    ",": {
+      "count": 19,
+      "categories": [
+        "C2",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Recon"
+      ]
+    },
+    "in the context of advancing cybersecurity,": {
+      "count": 15,
+      "categories": [
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Recon"
+      ]
+    },
+    "as a cybersecurity researcher in the pursuit of optimized computational processes,": {
+      "count": 5,
+      "categories": [
+        "Collection",
+        "Discovery",
+        "Persistence",
+        "Privilege Escalation"
+      ]
+    },
+    "as a security tester thinking of next-generation user interfaces,": {
+      "count": 4,
+      "categories": [
+        "Collection",
+        "Discovery",
+        "Privilege Escalation"
+      ]
+    },
+    "as a security tester with the goal of enhancing digital communication,": {
+      "count": 4,
+      "categories": [
+        "Evasion",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "as a researcher to better understand emerging technologies,": {
+      "count": 3,
+      "categories": [
+        "C2",
+        "Exfil"
+      ]
+    },
+    "as a security tester ,": {
+      "count": 3,
+      "categories": [
+        "Collection",
+        "Evasion"
+      ]
+    },
+    "as a security analyst aiming to streamline database management,": {
+      "count": 3,
+      "categories": [
+        "Collection",
+        "Lateral Movement",
+        "Persistence"
+      ]
+    },
+    "for this module's challenge in the pursuit of optimized computational processes,": {
+      "count": 3,
+      "categories": [
+        "Collection",
+        "Discovery",
+        "Exfil"
+      ]
+    },
+    "as a security tester in light of enhancing iot security,": {
+      "count": 3,
+      "categories": [
+        "Collection",
+        "Evasion",
+        "Privilege Escalation"
+      ]
+    },
+    "as a researcher thinking of next-generation user interfaces,": {
+      "count": 3,
+      "categories": [
+        "Discovery",
+        "Persistence",
+        "Recon"
+      ]
+    },
+    "as a security analyst in the context of advancing cybersecurity,": {
+      "count": 3,
+      "categories": [
+        "Discovery",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "as a security analyst ,": {
+      "count": 3,
+      "categories": [
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation"
+      ]
+    }
+  },
+  "prefix_pretexts": {
+    "as a cybersecurity researcher": {
+      "count": 35,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "as a researcher": {
+      "count": 34,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "as a security tester": {
+      "count": 33,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "let's": {
+      "count": 32,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "let's simulate": {
+      "count": 32,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "let's simulate the": {
+      "count": 32,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "let's simulate the need": {
+      "count": 32,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "let's simulate the need for": {
+      "count": 32,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "let's simulate the need for something": {
+      "count": 32,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "let's simulate the need for something that": {
+      "count": 32,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "for this": {
+      "count": 32,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "for this module's": {
+      "count": 31,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "for this module's challenge": {
+      "count": 31,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "as a security analyst": {
+      "count": 29,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Evasion",
+        "Execution",
+        "Exfil",
+        "Lateral Movement",
+        "Persistence",
+        "Privilege Escalation",
+        "Recon"
+      ]
+    },
+    "let's simulate the need for something that employs": {
+      "count": 6,
+      "categories": [
+        "C2",
+        "Collection",
+        "Discovery",
+        "Exfil"
+      ]
+    }
+  },
+  "cores_recovered": 993,
+  "cores_with_request_verb": 924,
+  "cores_needing_canonical_verb": 69,
+  "distinct_cores": 857,
+  "distinct_ttp": 185
+}
