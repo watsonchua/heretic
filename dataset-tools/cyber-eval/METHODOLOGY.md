@@ -282,6 +282,64 @@ removing the **style** shortcut, not the semantic one. G1 is also the only gate 
 opinion about, so a corpus that passes G3-G6 while failing G1 should be treated as failing — that
 combination is what a generator and a judge sharing a blind spot would produce.
 
+### Results over 204 pairs
+
+| Gate | Value | |
+|---|---:|---|
+| g1_lead_in | **0.5172** | PASS (<= 0.60) |
+| g1_full_text | 0.7770 | FAIL (<= 0.75) |
+| g1_length_ratio | 0.1000 | PASS (<= 0.10) |
+| g2_cosine_median | 0.8600 | PASS (>= 0.45) |
+| g2_top1 | 0.9706 | PASS (>= 0.80) |
+| g3_twin_clear | 0.9902 | PASS (>= 0.95) |
+| g4_answerable | 0.9657 | PASS (>= 0.90) |
+| g5_harmful_harm | 0.5098 | FAIL (>= 0.90) |
+| g6_match | 0.5000 | FAIL (>= 0.90) |
+| g7_max_axis | 0.3824 | PASS (<= 0.40) |
+
+**The design goal is met.** First-three-words accuracy falls from 0.9101 on independently drawn
+pools to **0.5172** on the paired corpus — chance is 0.50. The style shortcut that made the
+original approach unusable is gone, measured by the one check no model has an opinion about.
+Pairing is tight: within-pair cosine 0.86, and the twin is its partner's top-1 neighbour 97% of
+the time.
+
+Three caveats on the passes. `g1_length_ratio` lands exactly on its threshold (18 against 20
+median words). `g7_max_axis` passes at 0.3824 against a 0.40 limit, with realised axis drifting
+from assigned on **47%** of pairs — it passes only because the drift spreads across categories
+instead of collapsing into one, and it is two points from failing. Two pairs were judged to
+change no intent at all.
+
+### G6 is mis-specified, not failing
+
+G6's threshold was set by guess. Validated against the ten human-written JailbreakBench
+Malware/Hacking pairs, which is what this gate was supposed to be checked on:
+
+| | median match | mean | pass at 0.7 |
+|---|---:|---:|---:|
+| JBB human-written pairs | 0.726 | 0.596 | **6/10** |
+| generated pairs | 0.701 | 0.669 | 50% |
+
+Generated pairs score within 0.025 of human-written ones, and **the human gold standard itself
+only reaches 60% against the 0.7 cut**. A target of "90% above 0.7" is therefore unreachable by
+any pairing, including hand-made. The gate measures the classifier's willingness to affirm an
+abstract question, not pair quality.
+
+Axis drift is not the explanation: pairs that kept their assigned axis pass G6 at 55% against
+44% for drifted ones, an 11-point gap that does not account for a 40-point shortfall.
+
+G6 must be re-specified before it means anything — by rewording the question, by setting the
+threshold from the gold distribution rather than by guess, or by dropping it in favour of the
+cosine measure in G2, which already separates cleanly. Lowering the number until the corpus
+passes would be goalpost-moving and is not the fix.
+
+### G5 is a real shortfall
+
+Unlike G6, G5's failure is not a threshold artefact. Only 51% of harmful prompts exceed 1.3, for
+two compounding reasons already recorded: MITRE is a dual-use corpus at median harm 1.00, and
+the generation step dropped its harshest 7%. The remedy is drawing the harmful class from
+harsher sources, not adjusting the cut — though the 1.3 cut is itself uncalibrated until the
+hand labels land.
+
 ## 8. Evaluation is not part of the dataset
 
 `harm`, `is_cyber` and `axis` describe a prompt. Whether a model refused describes a

@@ -25,30 +25,35 @@ Until this lands, every System One threshold in the gates is a guess.
 ## Open problems
 
 ### Realised axis drifts from assigned
-42% on a 12-pair sample, collapsing toward "defensive". Assignment made the *assigned*
-distribution perfect and changed nothing else. G7 fails at 0.50 against a 0.40 target.
+**47%** over 204 pairs. Assignment made the *assigned* distribution perfect and changed nothing
+else. G7 passes at 0.3824 only because the drift spreads across categories rather than
+collapsing into one, and it sits two points from its 0.40 limit.
 
 Fix: enforce the realised axis during candidate selection, the same way G3 was moved into the
 generation loop. Generate candidates, judge the realised axis, reject the ones that drifted.
 This turns axis assignment from a hint into a constraint.
 
-### G6 like-for-like at 0.50
-Half of pairs judged matched, against a 90% target, on the same 12-pair sample. Likely the same
-root cause as the axis drift: a twin that silently became a defensive counterpart is less
-like-for-like with its partner than one that kept the task shape. Re-measure after the axis fix
-before treating it as a separate problem.
+### G6 is mis-specified
+Re-specify before using. Human-written JBB pairs score median 0.726 against our 0.701, and only
+6 of 10 gold pairs clear the 0.7 threshold, so "90% above 0.7" is unreachable by hand-made
+pairing. Options: reword the match question, set the threshold from the gold distribution, or
+drop G6 in favour of G2's cosine, which already separates cleanly at 0.86. Do not simply lower
+the number until the corpus passes.
 
-### G5 harmful-side harm at 0.42
-Only 42% of harmful prompts score above 1.3. This is not a de-templating artefact — stripping
-wrappers changes harm by +0.02. CyberSecEval MITRE is simply a dual-use corpus (median harm
-1.00, against 1.89-1.90 for ClearHarm, JBB-Behaviors and MaliciousInstruct).
+Axis drift is not the cause: kept-axis pairs pass at 55%, drifted at 44%, an 11-point gap
+against a 40-point shortfall.
 
-Two responses, not exclusive: hold MITRE well below its 25% cap and draw the bulk of the harmful
-class from WildGuardMix and AdvBench, and revisit whether 1.3 is the right cut once calibration
-sets it.
+### G5 harmful-side harm at 0.51
+A real shortfall, not a threshold artefact. Two compounding causes: MITRE is dual-use at median
+harm 1.00 (against 1.89-1.90 for ClearHarm, JBB-Behaviors and MaliciousInstruct), and generation
+dropped its harshest 7%. Remedy is harsher sources — WildGuardMix and AdvBench — rather than
+adjusting the cut, though 1.3 is itself uncalibrated until the hand labels land.
 
-All three numbers come from a 12-pair smoke test. Re-run `gates.py` over the full corpus before
-acting on any of them.
+### g1_full_text at 0.777 against a 0.75 target
+Narrowly failing, and the target was set by guess. This measures semantic separability, which
+should not reach chance: words like *exfiltrate* carry real signal. Decide whether 0.75 is
+defensible or whether the right target is "materially below the unpaired baseline of 0.9027",
+which 0.777 satisfies. Resolve by argument, not by moving it after seeing the result.
 
 ## Not yet built
 
