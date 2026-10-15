@@ -152,3 +152,23 @@ def post_with_retry(url, body, key, gate: RateGate, retries=8, timeout=120):
                 gate.hold_off(wait)
             time.sleep(wait * random.uniform(0.9, 1.3))
     raise RuntimeError("unreachable")
+
+
+def cluster_by_cosine(vectors, threshold: float):
+    """Average-linkage agglomerative clustering on unit-normalised vectors.
+
+    Used both to collapse near-duplicate behaviours and to group them for splitting, so the
+    two share one definition of "near-duplicate" and cannot drift apart.
+    """
+    import numpy as np
+    from sklearn.cluster import AgglomerativeClustering
+
+    X = np.asarray(vectors, dtype=np.float32)
+    X = X / np.linalg.norm(X, axis=1, keepdims=True)
+    labels = AgglomerativeClustering(
+        n_clusters=None,
+        distance_threshold=1 - threshold,
+        metric="cosine",
+        linkage="average",
+    ).fit_predict(X)
+    return labels, X

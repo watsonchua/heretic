@@ -21,18 +21,10 @@ import argparse
 import json
 import math
 from collections import Counter, defaultdict
-from pathlib import Path
 
 import llm
 import numpy as np
-from common import read_jsonl
-from sklearn.cluster import AgglomerativeClustering
-
-R = Path(__file__).resolve().parent
-
-
-def norm(s):
-    return " ".join(s.split()).casefold().rstrip(".?! ")
+from common import HERE, cluster_by_cosine, normalize, read_jsonl
 
 
 def load_embeddings(texts, cache, model):
@@ -53,21 +45,13 @@ def load_embeddings(texts, cache, model):
     return np.array([store["vectors"][t] for t in texts], dtype=np.float32)
 
 
-def cluster(X, threshold):
-    X = X / np.linalg.norm(X, axis=1, keepdims=True)
-    model = AgglomerativeClustering(
-        n_clusters=None, distance_threshold=1 - threshold, metric="cosine", linkage="average"
-    )
-    return model.fit_predict(X), X
-
-
 def representatives(labels, X, records):
     """One per cluster: a verb-carrying core nearest the centroid, else nearest overall."""
     out = []
     for c in sorted(set(labels)):
         idx = [i for i, label in enumerate(labels) if label == c]
         centroid = X[idx].mean(0)
-        centroid /= np.linalg.norm(centroid) or 1
+        centroid /= np.linalg.normalize(centroid) or 1
         ranked = sorted(idx, key=lambda i: (records[i]["needs_verb"], -float(X[i] @ centroid)))
         best = records[ranked[0]]
         out.append(
@@ -137,13 +121,13 @@ def stratify(reps, target, per_ttp):
 
 
 def run(a):
-    records = read_jsonl(R / a.cores)
+    records = read_jsonl(HERE / a.cores)
     records = [r for r in records if r["core"].strip()]
     # Collapse exact repeats first so identical cores are not embedded twice.
     seen = {}
     deduped = []
     for r in records:
-        k = norm(r["core"])
+        k = normalize(r["core"])
         if k in seen:
             seen[k]["duplicates"] = seen[k].get("duplicates", 0) + 1
         else:
@@ -152,8 +136,8 @@ def run(a):
             deduped.append(r)
     print(f"{len(records)} cores -> {len(deduped)} distinct")
 
-    X = load_embeddings([norm(r["core"]) for r in deduped], R / a.cache, a.embed_model)
-    labels, Xn = cluster(X, a.threshold)
+    X = load_embeddings([normalize(r["core"]) for r in deduped], HERE / a.cache, a.embed_model)
+    labels, Xn = cluster_by_cosine(X, a.threshold)
     reps = representatives(labels, Xn, deduped)
     print(f"{len(deduped)} distinct -> {len(reps)} behaviour clusters at cosine {a.threshold}")
     sizes = Counter(r["cluster_size"] for r in reps)
@@ -170,7 +154,7 @@ def run(a):
     over = [t for t, n in Counter(p["ttp_id"] for p in picked).items() if n > a.per_ttp]
     assert not over, f"TTP cap exceeded: {over}"
 
-    (R / a.out).write_text("".join(json.dumps(p, ensure_ascii=False) + "\n" for p in picked))
+    (HERE / a.out).write_text("".join(json.dumps(p, ensure_ascii=False) + "\n" for p in picked))
     report = {
         "source": "purpcode/CyberSecEval-MITRE",
         "cores_in": len(records),
@@ -184,7 +168,7 @@ def run(a):
         "needs_verb": sum(1 for p in picked if p["needs_verb"]),
         "embed_model": a.embed_model,
     }
-    (R / "selection.json").write_text(json.dumps(report, indent=2) + "\n")
+    (HERE / "selection.json").write_text(json.dumps(report, indent=2) + "\n")
     print(f"\nwritten {a.out} and selection.json")
     print(
         f"MITRE share stays under 25% of the harmful class if it totals "

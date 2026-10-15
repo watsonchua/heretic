@@ -15,18 +15,16 @@ import argparse
 import hashlib
 import json
 from collections import Counter
-from pathlib import Path
 
 import diagnostics as dg
 import llm
 import numpy as np
 import systemone
-from common import read_jsonl
+from common import HERE, read_jsonl
 
-R = Path(__file__).resolve().parent
 # Three System One calls per pair, so a few hundred pairs is a long run. Cache every answer on
 # disk keyed by (question set, text) so a failure or an interrupt costs only the current pair.
-CACHE = R / "gates.cache.json"
+CACHE = HERE / "gates.cache.json"
 T = {
     "g1_lead_in": 0.60,
     "g1_full_text": 0.75,
@@ -52,7 +50,7 @@ AXIS_KEYS = {"defensive": 1, "benign_action": 2, "benign_artefact": 3, "forensic
 
 
 def run(a):
-    pairs = read_jsonl(R / a.pairs)
+    pairs = read_jsonl(HERE / a.pairs)
     if a.limit:
         pairs = pairs[: a.limit]
     harmful = [p["harmful"] for p in pairs]
@@ -175,7 +173,7 @@ def run(a):
             for k, v in tiers.items()
         },
     }
-    (R / "gates.json").write_text(json.dumps(out, indent=2) + "\n")
+    (HERE / "gates.json").write_text(json.dumps(out, indent=2) + "\n")
     print(
         f"\n{len(failed)} of {len(T)} gates failing" + (f": {', '.join(failed)}" if failed else "")
     )

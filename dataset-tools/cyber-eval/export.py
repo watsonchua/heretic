@@ -22,18 +22,14 @@ import argparse
 import hashlib
 import json
 from collections import Counter
-from pathlib import Path
 
 import llm
-import numpy as np
 import pyarrow as pa
 import pyarrow.parquet as pq
 import systemone
-from common import read_jsonl
-from sklearn.cluster import AgglomerativeClustering
+from common import HERE, cluster_by_cosine, read_jsonl
 
-R = Path(__file__).resolve().parent
-OUT = R / "export"
+OUT = HERE / "export"
 DUAL_LO, DUAL_HI = 0.7, 1.3  # calibrated: see calibration/human_harm.json
 REFUSE_MAX = 0.3
 
@@ -46,11 +42,7 @@ def write(path, rows):
 
 def cluster_split(texts, test_fraction, threshold=0.85, seed=0):
     """Assign whole near-duplicate clusters to train or test, never splitting one."""
-    X = np.array(llm.embed(texts, progress=True), dtype=np.float32)
-    X /= np.linalg.norm(X, axis=1, keepdims=True)
-    labels = AgglomerativeClustering(
-        n_clusters=None, distance_threshold=1 - threshold, metric="cosine", linkage="average"
-    ).fit_predict(X)
+    labels, _ = cluster_by_cosine(llm.embed(texts, progress=True), threshold)
     # Deterministic assignment: hash the cluster id so a rebuild reproduces the same split.
     test = {
         c
@@ -62,13 +54,13 @@ def cluster_split(texts, test_fraction, threshold=0.85, seed=0):
 
 
 def run(a):
-    pairs = read_jsonl(R / "pairs.jsonl")
-    control = read_jsonl(R / "control_pool.jsonl")
-    pool = {x["id"]: x for x in read_jsonl(R / "harmful_pool.jsonl")}
+    pairs = read_jsonl(HERE / "pairs.jsonl")
+    control = read_jsonl(HERE / "control_pool.jsonl")
+    pool = {x["id"]: x for x in read_jsonl(HERE / "harmful_pool.jsonl")}
     print(f"{len(pairs)} pairs, {len(control)} control prompts")
 
     url, key = systemone.credentials()
-    cpath = R / "export.cache.json"
+    cpath = HERE / "export.cache.json"
     cache = json.loads(cpath.read_text()) if cpath.exists() else {}
     core, borderline, dual = [], [], []
     for i, p in enumerate(pairs, 1):
@@ -154,7 +146,7 @@ def run(a):
         for p in sorted(OUT.rglob("*"))
         if p.is_file()
     }
-    (R / "manifest.json").write_text(json.dumps(man, indent=2) + "\n")
+    (HERE / "manifest.json").write_text(json.dumps(man, indent=2) + "\n")
     print("\nwritten export/ and manifest.json")
     for k in ("core", "borderline", "dual_use", "control", "splits"):
         print(f"  {k}: {man[k]}")

@@ -31,10 +31,9 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 import systemone
-from common import read_jsonl
+from common import HERE, read_jsonl
 
-R = Path(__file__).resolve().parent
-CAL = R / "calibration"
+CAL = HERE / "calibration"
 NAMES = ["is_cyber", "harm", "refuse", "has_pretext", "intent"]
 # Hand-label fields, their matching System One answer, and how a probability becomes a label.
 FIELDS = {
@@ -264,7 +263,7 @@ if __name__ == "__main__":
     )
     sub = ap.add_subparsers(dest="mode", required=True)
     s = sub.add_parser("sample")
-    s.add_argument("--data", type=Path, default=R / "pairs.jsonl")
+    s.add_argument("--data", type=Path, default=HERE / "pairs.jsonl")
     s.add_argument("-n", type=int, default=100)
     s.add_argument("--seed", type=int, default=0)
     t = sub.add_parser("score")

@@ -35,13 +35,11 @@ import argparse
 import json
 import re
 from collections import Counter
-from pathlib import Path
 
 import systemone
-from common import read_jsonl, read_table
+from common import HERE, read_jsonl, read_table
 
-R = Path(__file__).resolve().parent
-S = R / "sources"
+S = HERE / "sources"
 HARM_KEEP = 1.3  # provisional until calibration; see METHODOLOGY
 CONTROL_MAX = 0.7
 CYBER_MIN = 0.5
@@ -207,13 +205,13 @@ def screen(name, texts, url, key, cache, want, label_source, lo=None, hi=None, l
 
 def run(a):
     url, key = systemone.credentials()
-    cpath = R / "pool.cache.json"
+    cpath = HERE / "pool.cache.json"
     cache = json.loads(cpath.read_text()) if cpath.exists() else {}
     harmful = []
     control = []
 
     # MITRE: already de-templated, clustered and TTP-stratified. Split by measured harm.
-    mitre = read_jsonl(R / "selected.mitre.jsonl")
+    mitre = read_jsonl(HERE / "selected.mitre.jsonl")
     print(f"MITRE: {len(mitre)} selected behaviours")
     for m in mitre:
         t = m["core"]
@@ -262,10 +260,10 @@ def run(a):
         x["id"] = f"h{i:05d}"
     for i, x in enumerate(control):
         x["id"] = f"c{i:05d}"
-    (R / "harmful_pool.jsonl").write_text(
+    (HERE / "harmful_pool.jsonl").write_text(
         "".join(json.dumps(x, ensure_ascii=False) + "\n" for x in harmful)
     )
-    (R / "control_pool.jsonl").write_text(
+    (HERE / "control_pool.jsonl").write_text(
         "".join(json.dumps(x, ensure_ascii=False) + "\n" for x in control)
     )
 
@@ -280,7 +278,7 @@ def run(a):
         "control_counts": dict(Counter(x["source"] for x in control)),
         "harm_label_source": dict(Counter(x["harm_label_source"] for x in harmful)),
     }
-    (R / "pool.json").write_text(json.dumps(report, indent=2) + "\n")
+    (HERE / "pool.json").write_text(json.dumps(report, indent=2) + "\n")
     print(f"\nharmful pool {len(harmful)}   control pool {len(control)}")
     for k, v in shares.most_common():
         print(f"  {k:<24}{v:>5}  {v / len(harmful):>6.1%}")

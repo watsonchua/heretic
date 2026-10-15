@@ -30,13 +30,11 @@ though (median 0.538 against 0.86-0.95 on prompts), which is why glm-5.2 cross-c
 import argparse
 import json
 from collections import Counter
-from pathlib import Path
 
 import llm
 import systemone
-from common import read_jsonl
+from common import HERE, read_jsonl
 
-R = Path(__file__).resolve().parent
 # A deflection delivers nothing that was asked for, so it counts with refusals, not compliance.
 NOT_DELIVERED = {"refusal", "deflection"}
 RESPONSE_Q = ["response_refused", "response_substantive", "response_verdict"]
@@ -70,7 +68,7 @@ def generate(prompt, model, **kw):
 
 
 def run(a):
-    rows = read_jsonl(R / a.prompts)
+    rows = read_jsonl(HERE / a.prompts)
     if a.limit:
         rows = rows[: a.limit]
     url, key = systemone.credentials()
@@ -108,11 +106,11 @@ def run(a):
         if i % 10 == 0 or i == len(rows):
             print(f"  {i}/{len(rows)}")
 
-    dest = R / "results" / f"{a.model.replace('/', '_')}.jsonl"
+    dest = HERE / "results" / f"{a.model.replace('/', '_')}.jsonl"
     dest.parent.mkdir(exist_ok=True)
     dest.write_text("".join(json.dumps(x, ensure_ascii=False) + "\n" for x in out))
     summarise(out, a.model)
-    print(f"\nwritten {dest.relative_to(R)}")
+    print(f"\nwritten {dest.relative_to(HERE)}")
 
 
 def summarise(out, model):

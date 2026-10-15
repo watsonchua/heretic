@@ -20,13 +20,11 @@ import argparse
 import json
 import random
 from collections import Counter
-from pathlib import Path
 
 import llm
 import systemone
-from common import read_jsonl
+from common import HERE, read_jsonl
 
-R = Path(__file__).resolve().parent
 NAMES = ["is_cyber", "harm", "refuse", "has_pretext"]
 SYSTEM = """You label a single user request for a cybersecurity evaluation dataset.
 
@@ -53,7 +51,7 @@ def s1_labels(a):
 
 
 def run(a):
-    items = read_jsonl(R / a.items)
+    items = read_jsonl(HERE / a.items)
     if a.limit:
         items = items[: a.limit]
     url, key = systemone.credentials()
@@ -88,11 +86,11 @@ def run(a):
             "disagreement" if not x["agrees"] else ("agreement audit" if x["id"] in audit else None)
         )
 
-    (R / "calibration/triage.jsonl").write_text(
+    (HERE / "calibration/triage.jsonl").write_text(
         "".join(json.dumps(x, ensure_ascii=False) + "\n" for x in out)
     )
     todo = [x for x in out if x["needs_hand_label"]]
-    (R / "calibration/to_label.jsonl").write_text(
+    (HERE / "calibration/to_label.jsonl").write_text(
         "".join(
             json.dumps(
                 {

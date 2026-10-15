@@ -42,9 +42,8 @@ from pathlib import Path
 import llm
 import numpy as np
 import systemone
-from common import read_jsonl
+from common import HERE, read_jsonl
 
-R = Path(__file__).resolve().parent
 AXES = {
     1: (
         "defensive counterpart",
@@ -165,11 +164,11 @@ def attempt(harmful, axis, shots, k, temperature, note, url, key, rejected):
 
 
 def run(a):
-    rows = read_jsonl(R / a.prompts)
+    rows = read_jsonl(HERE / a.prompts)
     if a.limit:
         rows = rows[: a.limit]
     shots = few_shot(Path(a.sources))
-    dest = R / a.out
+    dest = HERE / a.out
     # Resumable: a long run can be interrupted without losing completed pairs.
     done = {x["pair_id"] for x in read_jsonl(dest)} if dest.exists() else set()
     if done:
@@ -251,7 +250,7 @@ def run(a):
                 )
     fh.close()
     if dropped:
-        (R / "twins.dropped.jsonl").write_text(
+        (HERE / "twins.dropped.jsonl").write_text(
             "".join(json.dumps(x, ensure_ascii=False) + "\n" for x in dropped)
         )
 
@@ -282,7 +281,7 @@ if __name__ == "__main__":
     ap.add_argument("--prompts", default="selected.mitre.jsonl")
     ap.add_argument("--field", default="core")
     ap.add_argument("--out", default="pairs.jsonl")
-    ap.add_argument("--sources", default=str(R / "sources"))
+    ap.add_argument("--sources", default=str(HERE / "sources"))
     ap.add_argument("--k", type=int, default=3)
     ap.add_argument("--temperature", type=float, default=0.8)
     ap.add_argument("--retries", type=int, default=2)

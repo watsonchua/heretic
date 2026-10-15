@@ -22,22 +22,20 @@ Scope, and what this does not establish:
 
 import json
 import statistics
-from pathlib import Path
 
-import pyarrow.parquet as pq
+from common import HERE, read_table
 
-R = Path(__file__).resolve().parent
-CACHE = R / "pool.cache.json"
-OUT = R / "calibration/human_harm.json"
+CACHE = HERE / "pool.cache.json"
+OUT = HERE / "calibration/human_harm.json"
 MIN_AGREEMENT = 0.85
 
 
 def human_labels():
     rows = []
     for split in ("train", "test"):
-        p = R / f"sources/wildguardmix/{split}/wildguard_{split}.parquet"
+        p = HERE / f"sources/wildguardmix/{split}/wildguard_{split}.parquet"
         if p.exists():
-            rows += pq.read_table(p).to_pylist()
+            rows += read_table(p)
     return {
         r["prompt"]: r["prompt_harm_label"]
         for r in rows
@@ -108,7 +106,7 @@ def run():
         tag = "  <- best" if t == best[0] else ""
         print(f"  {t:<12.2f}{a:>10.1%}{r:>10.1%}{s:>14.1%}{tag}")
     print(f"\n{'PASS' if report['passes'] else 'FAIL'} against the {MIN_AGREEMENT:.0%} minimum")
-    print(f"written {OUT.relative_to(R)}")
+    print(f"written {OUT.relative_to(HERE)}")
 
 
 if __name__ == "__main__":
