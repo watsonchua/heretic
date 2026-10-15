@@ -29,8 +29,9 @@ labels land.
 
   python twins.py --prompts selected.mitre.jsonl --field core --out pairs.jsonl
 """
-import argparse,csv,json,re
+import argparse,csv,json,re,threading
 from collections import Counter
+from concurrent.futures import ThreadPoolExecutor,as_completed
 from pathlib import Path
 import numpy as np
 import llm,systemone
@@ -120,29 +121,45 @@ def run(a):
  done={x['pair_id'] for x in (json.loads(l) for l in dest.read_text().splitlines() if l.strip())} if dest.exists() else set()
  if done:print(f'resuming, {len(done)} pairs already built')
  url,key=systemone.credentials()
- print(f'{len(rows)} prompts, {len(shots)} few-shot pairs, k={a.k}, up to {a.retries+1} rounds each')
+ print(f'{len(rows)} prompts, {len(shots)} few-shot pairs, k={a.k}, '
+       f'up to {a.retries+1} rounds each, {a.workers} workers')
  axes=sorted(AXES);out=[];rejected=Counter();dropped=[]
+ # Each prompt needs k generation calls plus gating, and kimi-k3 dominates the latency.
+ # Sequentially that is hours for a few hundred prompts, so prompts run concurrently. The
+ # axis is bound to the row index before dispatch, so it stays deterministic regardless of
+ # completion order.
+ todo=[(i,r) for i,r in enumerate(rows,1) if (r.get('id') or r.get('task_id')) not in done]
  fh=dest.open('a' if done else 'w')
- for i,r in enumerate(rows,1):
-  pid=r.get('id') or r.get('task_id')
-  if pid in done:continue
-  harmful=r[a.field]
+ lock=threading.Lock();counter={'n':0}
+
+ def work(item):
+  i,r=item
+  pid=r.get('id') or r.get('task_id');harmful=r[a.field]
   axis=axes[(i-1)%len(axes)]          # assigned, never model-chosen
   scored=[];note=''
-  for round_ in range(a.retries+1):
-   scored=attempt(harmful,axis,shots,a.k,a.temperature,note,url,key,rejected)
+  local=Counter()
+  for _ in range(a.retries+1):
+   try:scored=attempt(harmful,axis,shots,a.k,a.temperature,note,url,key,local)
+   except Exception as e:local[f'error: {type(e).__name__}']+=1;scored=[]
    if scored:break
    note=('\n\nYour previous attempt was still judged harmful or dual-use. The INTENT must '
          'genuinely change, not just a word or two. Do not keep the attacker goal.')
-  if not scored:
-   dropped.append({'pair_id':pid,'axis':axis,'harmful':harmful});continue
+  if not scored:return None,{'pair_id':pid,'axis':axis,'harmful':harmful},local
   cos,harm,best=max(scored)
-  rec={'pair_id':pid,'axis':axis,'axis_name':AXES[axis][0],'ttp_id':r.get('ttp_id'),
+  return ({'pair_id':pid,'axis':axis,'axis_name':AXES[axis][0],'ttp_id':r.get('ttp_id'),
    'mitre_category':r.get('mitre_category'),'harmful':harmful,'harmless':best,
    'twin_harm_score':round(harm,3),'twin_cosine':round(cos,3),
-   'generation_model':llm.CHAT_MODEL,'gate_model':systemone.MODEL}
-  out.append(rec);fh.write(json.dumps(rec,ensure_ascii=False)+'\n');fh.flush()
-  if i%10==0 or i==len(rows):print(f'  {i}/{len(rows)}  kept {len(out)}  dropped {len(dropped)}')
+   'generation_model':llm.CHAT_MODEL,'gate_model':systemone.MODEL},None,local)
+
+ with ThreadPoolExecutor(max_workers=a.workers) as pool:
+  for fut in as_completed([pool.submit(work,x) for x in todo]):
+   rec,drop,local=fut.result()
+   with lock:
+    rejected.update(local)
+    if rec:out.append(rec);fh.write(json.dumps(rec,ensure_ascii=False)+'\n');fh.flush()
+    if drop:dropped.append(drop)
+    counter['n']+=1
+    print(f"  {counter['n']}/{len(todo)}  kept {len(out)}  dropped {len(dropped)}",flush=True)
  fh.close()
  if dropped:
   (R/'twins.dropped.jsonl').write_text(''.join(json.dumps(x,ensure_ascii=False)+'\n' for x in dropped))
@@ -164,4 +181,5 @@ if __name__=='__main__':
  ap.add_argument('--out',default='pairs.jsonl');ap.add_argument('--sources',default='../../cyber-eval/sources')
  ap.add_argument('--k',type=int,default=3);ap.add_argument('--temperature',type=float,default=0.8)
  ap.add_argument('--retries',type=int,default=2);ap.add_argument('--limit',type=int)
+ ap.add_argument('--workers',type=int,default=8)
  run(ap.parse_args())

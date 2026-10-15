@@ -588,6 +588,68 @@ Once the corpus is paired, `evaluate.py` reports a 2x2 per pair. The informative
 the intent. Two unpaired pools cannot show it, and it is the clearest single diagnostic the
 paired design buys.
 
+## 4c. Gateway rate limit
+
+Measured 2026-10-15 on `kimi-k3`: successful calls return in 3-5 s, and roughly 40% come back
+HTTP 429 with `Retry-After: 60`. The budget is **per key, not per connection**.
+
+Raising worker count therefore makes throughput worse, not better. Eight workers each
+discovered the 429 independently, each slept its own 60 seconds, and between them kept the
+limiter permanently tripped: 4 pairs in the time 1 worker would have managed 3. Both clients
+now share a "not before" timestamp, so the first 429 pauses every worker and the retry wave is
+spread with jitter. Backoff honours `Retry-After` (it was 1/2/4 s against a server asking for
+60, which burned the retries and failed pairs silently) and retries went from 4 to 8.
+
+Practical consequence: generating 220 pairs is a multi-hour job, and `gates.py` adds three
+System One calls per pair on top. Both are resumable. A higher-tier key would help more than
+any further code change.
+
+## 4d. Generator selection, re-tested 2026-10-15
+
+The twin generator was re-examined because `kimi-k3` is rate-limited and because a generator
+handed attack prompts might refuse the rewriting task outright. A refusal would not merely slow
+the run: it would fail **non-randomly**, on the most harmful prompts, quietly stripping the
+corpus of its hardest cases and leaving the harmful side milder than its sources.
+
+Refusal was measured three ways -- call error, output that does not parse (refused in prose),
+and output that parses but whose `twin` field is itself a refusal. The third case is the one a
+parse-rate check misses.
+
+Twelve unseen prompts, single-shot, k=1, no retries:
+
+| model | refused | no parse | G3 clear | median harm | s/prompt |
+|---|---:|---:|---:|---:|---:|
+| gemini-3.5-flash-global | 0 | 0 | 10/12 | 0.51 | 9.1 |
+| azure/gpt-5-mini-eastus2 | 0 | 0 | 9/12 | 0.56 | 10.3 |
+| gemini-3.8-flash-global | 0 | 0 | 7/12 | 0.58 | 17.1 |
+
+**No candidate refused anything.** Note that `gemini-3.8-flash-global` is the weakest of the
+three despite being the newest.
+
+### The decision: keep kimi-k3
+
+The live run settles it better than any benchmark. Over the first 79 prompts with the real
+pipeline (k=2 plus the retry loop): **79 kept, 0 dropped, 0 twins containing a refusal phrase**,
+median twin harm 0.42, axis distribution 19/20/20/20.
+
+Two earlier arguments for switching were wrong and are recorded here so they are not repeated:
+
+- The "17 hours" estimate was taken from the startup window. The sustained rate is about 2
+  pairs per minute, so the full 220 is roughly 3 hours.
+- The quality comparison that showed kimi-k3 at 2/6 was single-shot. That is not the pipeline.
+  With k=2 and retries the keep rate is 100%.
+
+Switching now would mean discarding 79 good pairs and regenerating them to keep one generator
+style across the corpus: real cost, no demonstrated benefit. If a change is ever needed,
+`gemini-3.5-flash-global` is the candidate the data supports.
+
+### Drop-bias check, to run after every generation
+
+Compare the mean harm score of `twins.dropped.jsonl` against the kept set. A generator that
+declines or fails on the hardest prompts biases the corpus toward mild examples. If the dropped
+set is materially harsher than the kept set, say so in `METHODOLOGY.md` rather than let it pass.
+Current run: zero drops, so no bias to report.
+
 ## 5. Resolved decisions
 
 1. **Twin generation**: `kimi-k3` via the LiteLLM gateway. Confirmed available and validated in 3d.

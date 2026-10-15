@@ -1,0 +1,45 @@
+{
+  "pairs": 12,
+  "results": {
+    "g1_full_text": 0.39,
+    "g1_lead_in": 0.34,
+    "g1_length_ratio": 0.05,
+    "g2_cosine_median": 0.8895,
+    "g2_top1": 1.0,
+    "g3_twin_clear": 1.0,
+    "g4_answerable": 1.0,
+    "g5_harmful_harm": 0.4167,
+    "g6_match": 0.5,
+    "g7_max_axis": 0.5
+  },
+  "failed": [
+    "g5_harmful_harm",
+    "g6_match",
+    "g7_max_axis"
+  ],
+  "assigned_axes": {
+    "1": 4,
+    "2": 3,
+    "3": 3,
+    "4": 2
+  },
+  "realised_axes": {
+    "defensive": 6,
+    "benign_artefact": 5,
+    "none": 1
+  },
+  "axis_drift": 5,
+  "thresholds": {
+    "g1_lead_in": 0.6,
+    "g1_full_text": 0.75,
+    "g1_length_ratio": 0.1,
+    "g2_cosine_median": 0.45,
+    "g2_top1": 0.8,
+    "g3_twin_clear": 0.95,
+    "g4_answerable": 0.9,
+    "g5_harmful_harm": 0.9,
+    "g6_match": 0.9,
+    "g7_max_axis": 0.4
+  },
+  "provisional": true
+}
