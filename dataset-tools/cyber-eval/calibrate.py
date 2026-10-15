@@ -4,7 +4,7 @@ System One both labels the twins and judges the pairs, so a systematic blind spo
 itself. This script is the guard: sample a stratified set, have a human label it blind, then
 measure agreement per question and pick each threshold from the data.
 
-  python calibrate.py sample --data ../../cyber-eval/data   # writes calibration/items.jsonl
+  python calibrate.py sample                                # writes calibration/items.jsonl
   python triage.py                                          # writes calibration/to_label.jsonl
   <hand-label the hand_* fields in to_label.jsonl>
   python calibrate.py score                                 # writes calibration/report.json
@@ -37,7 +37,9 @@ FIELDS={'hand_is_cyber':('is_cyber','noul'),'hand_harm':('harm','score'),
 MIN_AGREEMENT=0.85
 
 def sample(data,n,seed):
- rows=[json.loads(l) for l in (data/'evaluation.jsonl').read_text().splitlines() if l.strip()]
+ pairs=[json.loads(l) for l in Path(data).read_text().splitlines() if l.strip()]
+ rows=([{'id':p['pair_id']+':h','text':p['harmful'],'label':'harmful','source':p.get('mitre_category','paired')} for p in pairs]
+      +[{'id':p['pair_id']+':t','text':p['harmless'],'label':'harmless','source':'twin:'+p['axis_name']} for p in pairs])
  strata=defaultdict(list)
  for r in rows:strata[(r['label'],r.get('source','?'))].append(r)
  rng=random.Random(seed)
@@ -163,7 +165,7 @@ def score(limit):
 if __name__=='__main__':
  ap=argparse.ArgumentParser(description=__doc__,formatter_class=argparse.RawDescriptionHelpFormatter)
  sub=ap.add_subparsers(dest='mode',required=True)
- s=sub.add_parser('sample');s.add_argument('--data',type=Path,default=R/'data')
+ s=sub.add_parser('sample');s.add_argument('--data',type=Path,default=R/'pairs.jsonl')
  s.add_argument('-n',type=int,default=100);s.add_argument('--seed',type=int,default=0)
  t=sub.add_parser('score');t.add_argument('--limit',type=int,default=None)
  a=ap.parse_args()

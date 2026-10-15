@@ -1,48 +1,48 @@
-# Additional source search
+# Source inventory
 
-Only original source prompts are eligible for the **harmful** side, and no locally generated
-formatting variants are included. The v0 sources below are combined by `build.py`.
+Revisions pinned in `download_sources.py`. Counts are measured, not taken from dataset cards.
+Selection rules and the screening method are in [METHODOLOGY.md](METHODOLOGY.md).
 
-The search goal has changed. v0 drew 90% of its harmful prompts from CyberSecEval MITRE and the
-two classes separate on template style at 91% accuracy; see [METHODOLOGY.md](METHODOLOGY.md).
-[PLAN.md](PLAN.md) Phase 2 therefore sets a hard cap of 25% per source per class and needs
-roughly 700-800 further harmful cyber prompts across at least four sources.
+## In use
 
-| Source | Verified evidence | Suitability |
-|---|---|---|
-| [CyberSecEval MITRE](https://huggingface.co/datasets/purpcode/CyberSecEval-MITRE) | Downloaded pinned revision `70213a497f4e7d5ee5b0089eac5b8d3244eba2af`: 1,000 rows, 981 distinct normalized `base_prompt` values, 269 technique mappings, 10 categories | Strong candidate for harmful set. Use one original base prompt per duplicate group; do not count mutated versions as independent. Needs intent and semantic overlap review, including dual-use requests. |
-| [CyberSecEval false-refusal](https://huggingface.co/datasets/purpcode/CyberSecEval-FRR) | Downloaded pinned revision `73294ca390f12ebb075d763550b942875dee5fc2`: 750 distinct normalized prompts, all `is_malicious=False` | Strong candidate for harmless set. Source-generated benchmark prompts; uniqueness is not proof of independent behaviors. Needs semantic and intent review. |
-| [Fenrir v2.1](https://huggingface.co/datasets/AlicanKiraz0/Cybersecurity-Dataset-Fenrir-v2.1) | Metadata/card describes 99,870 defensive instruction triples, Apache-2.0, OWASP/MITRE/authentication/cloud/cryptography coverage. Revision `fd7967ddda760281a2f01f4367f7b78bd128f3ec` | Candidate for remaining harmless prompts. Rows have not yet been downloaded or audited; publisher quality claims are unverified. |
-| [WildGuardMix](https://huggingface.co/datasets/allenai/wildguardmix) | Human-labeled prompt harmfulness; 10K–100K size category; ODC-BY; gated access | Candidate for harmful and harmless prompts after cyber filtering. No usable count verified. |
-| [BeaverTails](https://huggingface.co/datasets/PKU-Alignment/BeaverTails) | 330K QA pairs, human safety labels, CC-BY-NC-4.0 | Supplemental candidate, but labels apply to QA pairs/responses and cannot directly determine whether a prompt is harmful. Requires prompt-level classification. |
+| Source | Revision | Measured | Licence | Role |
+|---|---|---|---|---|
+| [WildGuardMix](https://huggingface.co/datasets/allenai/wildguardmix) | `d29c47f41c8b` | 88,458 rows; 4,696 harmful and 587 unharmful cyber, non-adversarial | ODC-BY, gated | harmful + control |
+| [CyberSecEval MITRE](https://huggingface.co/datasets/purpcode/CyberSecEval-MITRE) | `70213a497f4e` | 1,000 rows, 981 distinct prompts, 185 TTPs, 10 categories; 220 behaviours after collapsing | — | harmful |
+| [AdvBench](https://huggingface.co/datasets/walledai/AdvBench) | `9d4730540082` | 520 rows, 165 cyber | MIT, gated | harmful |
+| [HarmBench](https://github.com/centerforaisafety/HarmBench) | `8e1604d1171f` | 67 cybercrime_intrusion behaviours | MIT | harmful |
+| [SORRY-Bench](https://huggingface.co/datasets/sorry-bench/sorry-bench-202503) | `612a4e1f45db` | 440 rows (44 categories x 10), 47 cyber | other, gated | harmful |
+| [ClearHarm](https://huggingface.co/datasets/AlignmentResearch/ClearHarm) | `79464fb6b3c2` | 179 harmful rows, all distinct; 30 cyber | — | harmful |
+| [MaliciousInstruct](https://huggingface.co/datasets/walledai/MaliciousInstruct) | `4669349f48fe` | 100 rows, 28 cyber | CC-BY-SA-4.0 | harmful |
+| [StrongREJECT](https://github.com/alexandrasouly/strongreject) | `f7cad6c17e62` | 25 cyber seeds | MIT | harmful |
+| [JBB-Behaviors](https://huggingface.co/datasets/JailbreakBench/JBB-Behaviors) | `886acc352a31` | 100 harmful + 100 index-aligned benign; 23 cyber, 10 Malware/Hacking pairs | MIT | harmful + few-shot exemplars |
+| [OR-Bench hard-1k](https://huggingface.co/datasets/bench-llm/or-bench) | `e36d8b80e818` | 1,319 rows, 243 cyber | CC-BY-4.0 | control pool |
 
-The initial requested sources remain included: StrongREJECT (25 selected cyber seeds), HarmBench (67 cyber-category candidates), ClearHarm (12 selected cyber candidates). ClearHarm's rep40 configuration repeats 179 prompts 40 times; it cannot supply independent examples. HarmBench includes contextual prompts and dual-use cases needing review.
+ClearHarm's `rep40` configuration repeats its 179 prompts 40 times and cannot supply independent
+examples; only the base configuration is used. HarmBench includes contextual prompts needing
+review.
 
-Excluded as ground truth: CyberNative/Code_Vulnerability_Security_DPO. Its October 2026 correction explicitly states that chosen/rejected preference labels are not verified secure/insecure classifications.
+## Excluded
 
-## Phase 2 candidates (all unverified)
+| Source | Reason |
+|---|---|
+| [XSTest](https://huggingface.co/datasets/walledai/XSTest) | 450 rows, 2 cyber, 1 of them safe. Built for safe-looking-unsafe prompts generally, but has almost nothing in this domain. The public `natolambert/xstest-v2-copy` mirror also has an entirely null `label` column. |
+| [CyberNative Code_Vulnerability_Security_DPO](https://huggingface.co/datasets/CyberNative/Code_Vulnerability_Security_DPO) | Its own correction states the chosen/rejected preference labels are not verified secure/insecure classifications. |
+| [BeaverTails](https://huggingface.co/datasets/PKU-Alignment/BeaverTails) | Labels apply to QA pairs rather than prompts, so they cannot determine prompt harmfulness directly. CC-BY-NC-4.0. |
+| [CyberSecEval false-refusal](https://huggingface.co/datasets/purpcode/CyberSecEval-FRR) | 750 prompts across four templates covering 740 of them. Too templated to serve as a harmless side; see METHODOLOGY.md section 1. |
+| CySecBench | Does not resolve on the Hub. |
 
-None of these has a verified row count or revision hash yet. Do not take dataset card claims on
-trust; record a measured count and a pinned revision before use, or discard the source.
+## Not yet audited
 
-| Candidate | Intended side | Why |
-|---|---|---|
-| CySecBench | harmful | cyber-specific jailbreak prompts, categorised |
-| JailbreakBench JBB-Behaviors | harmful | has a Malware/Hacking category |
-| AdvBench `harmful_behaviors` | harmful | cyber subset |
-| SORRY-Bench | harmful | fine-grained categories including malware |
-| MaliciousInstruct | harmful | small, hacking category |
-| XSTest | harmless control | built for safe prompts that superficially look unsafe |
-| OR-Bench | harmless control | over-refusal prompts, categorised |
-| SecQA / Fenrir-style corpora | harmless control | ordinary cyber knowledge questions |
+| Candidate | Why it might help |
+|---|---|
+| [Fenrir v2.1](https://huggingface.co/datasets/AlicanKiraz0/Cybersecurity-Dataset-Fenrir-v2.1) | Card describes 99,870 defensive instruction triples, Apache-2.0. Rows not downloaded; publisher claims unverified. |
+| SecQA | Ordinary cyber knowledge questions for the control pool. CC-BY-NC-SA-4.0, so non-commercial only. |
 
-`source_search.json` contains measured CyberSecEval counts for v0, whose exports hold 1,085
-harmful and 947 harmless source prompts.
+## Gated access
 
-The CLM System One classifier replaces the regex cyber filter in `build.py` for v1 source
-screening, and supplies the harm and dual-use labels. It must be calibrated against 100
-hand-labelled items before any gate depends on it; see [PLAN.md](PLAN.md) section 3. No System
-One call has been made yet, and neither the base URL nor `CLM_API_KEY` is recorded in this
-workspace.
+WildGuardMix, AdvBench, SORRY-Bench and XSTest require accepting their terms on the Hub before
+`download_sources.py` can fetch them. Without that the downloader reports
+`Access denied. This repository requires approval.`
 
-Semantic review remains necessary before claiming independently validated behaviors.
+`source_search.json` holds the measured CyberSecEval counts.

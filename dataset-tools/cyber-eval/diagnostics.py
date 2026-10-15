@@ -2,9 +2,9 @@
 
 Independent of System One and kimi-k3 by design. This is the only evidence in the workflow
 that does not come from an LLM, so it is the check that catches a generator and a judge
-agreeing on the same mistake. Run against v0 and every later build; compare the JSON.
+agreeing on the same mistake. Run against every build and compare the JSON.
 
-  python diagnostics.py --data ../../cyber-eval/data --version v0
+  python diagnostics.py --pairs pairs.jsonl
 """
 import argparse,json,math,statistics
 from collections import Counter
@@ -80,7 +80,7 @@ def analyse(rows,pairs):
   # G2 only applies once the corpus is paired.
   if pairs:
    index={r['id']:i for i,r in enumerate(harmless) if 'id' in r}
-   want=[index.get(p.get('harmless',{}).get('id')) for p in pairs]
+   want=[index.get(p.get('pair_id')) for p in pairs]
    rank=[(arg[i]==w) for i,w in enumerate(want) if w is not None]
    same=[float(normalize(A)[i]@normalize(B)[w].T) for i,w in enumerate(want) if w is not None]
    if same:
@@ -129,14 +129,17 @@ def report(out):
 
 if __name__=='__main__':
  ap=argparse.ArgumentParser(description=__doc__)
- ap.add_argument('--data',type=Path,default=Path(__file__).resolve().parent/'data')
- ap.add_argument('--version',default='v0',help='label for the output file')
+ ap.add_argument('--pairs',type=Path,default=Path(__file__).resolve().parent/'pairs.jsonl')
+ ap.add_argument('--version',default='current',help='label for the output file')
  ap.add_argument('--out',type=Path,default=None)
  a=ap.parse_args()
- rows=load(a.data/'evaluation.jsonl')
- pairs_path=a.data/'pairs.jsonl'
- pairs=load(pairs_path) if pairs_path.exists() else []
- out={'version':a.version,'data':str(a.data),'paired':bool(pairs),**analyse(rows,pairs)}
+ pairs=load(a.pairs)
+ # Flatten the pairs into a labelled row set; the metrics below are label-based.
+ rows=([{'text':p['harmful'],'label':'harmful','id':p['pair_id'],'source':'paired',
+         'ttp':p.get('ttp_id')} for p in pairs]
+      +[{'text':p['harmless'],'label':'harmless','id':p['pair_id'],'source':'paired',
+         'ttp':p.get('ttp_id')} for p in pairs])
+ out={'version':a.version,'pairs':str(a.pairs),'paired':True,**analyse(rows,pairs)}
  report(out)
  dest=a.out or Path(__file__).resolve().parent/f'diagnostics.{a.version}.json'
  dest.write_text(json.dumps(out,indent=2)+'\n')

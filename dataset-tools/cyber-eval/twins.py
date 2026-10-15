@@ -178,7 +178,7 @@ def run(a):
 if __name__=='__main__':
  ap=argparse.ArgumentParser(description=__doc__,formatter_class=argparse.RawDescriptionHelpFormatter)
  ap.add_argument('--prompts',default='selected.mitre.jsonl');ap.add_argument('--field',default='core')
- ap.add_argument('--out',default='pairs.jsonl');ap.add_argument('--sources',default='../../cyber-eval/sources')
+ ap.add_argument('--out',default='pairs.jsonl');ap.add_argument('--sources',default=str(R/'sources'))
  ap.add_argument('--k',type=int,default=3);ap.add_argument('--temperature',type=float,default=0.8)
  ap.add_argument('--retries',type=int,default=2);ap.add_argument('--limit',type=int)
  ap.add_argument('--workers',type=int,default=8)

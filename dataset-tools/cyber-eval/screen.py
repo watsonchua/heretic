@@ -1,14 +1,14 @@
 """Screen a source for cyber relevance and harm with System One, replacing the regex filter.
 
-v0 selected cyber prompts with a hand-written pattern plus a `cyber bull|rocks` exclusion hack,
-and took 12 of ClearHarm's 179 harmful rows. A classifier does this better and uniformly across
-sources.
+A classifier screens more consistently than a keyword pattern and applies the same standard to
+every source. On ClearHarm it selects 30 of 179 harmful rows where a hand-written cyber regex
+selected 12; on MaliciousInstruct 28 against 16, on JBB-Behaviors 23 against 10.
 
 Records probabilities, never hard labels, so thresholds can move without re-querying. The harm
 question disagreed with glm-5.2 on 28% of calibration items, concentrated in the dual-use band,
 so `harm` here is a sorting aid and not a gate until calibration fixes its threshold.
 
-  python screen.py --input ../../cyber-eval/sources/clearharm/data/train-00000-of-00001.parquet \\
+  python screen.py --input sources/clearharm/data/train-00000-of-00001.parquet \\
                    --field content --name clearharm --label harmful
 
 Writes screened/<name>.jsonl. Re-running reuses rows already screened.

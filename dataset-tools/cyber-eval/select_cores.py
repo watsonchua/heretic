@@ -1,9 +1,10 @@
 """Collapse the de-templated MITRE cores to one prompt per distinct behaviour, then sample.
 
-Phase 1 steps 3-4. v0 counted 981 unique strings as 981 behaviours; they are 185 TTPs crossed
-with ~190 wrappers. De-templating removed the wrappers but left 857 distinct cores, because the
-technique wordings themselves vary. Clustering collapses those; stratified sampling then caps
-MITRE's share so it cannot dominate a second time.
+CyberSecEval MITRE's 981 distinct strings are 185 TTPs crossed with ~190 roleplay wrappers, so
+a unique-string count badly overstates how many behaviours it holds. De-templating removes the
+wrappers but leaves 911 distinct cores, because the technique wordings themselves vary.
+Clustering collapses those to one prompt per behaviour; stratified sampling then caps the
+source's share of the harmful class.
 
   embed     azure/text-embedding-3-large over the distinct cores
   cluster   average-linkage agglomerative at cosine >= --threshold
@@ -11,7 +12,7 @@ MITRE's share so it cannot dominate a second time.
             and sits closest to the cluster centroid
   sample    at most --per-ttp per TTP, allocated evenly across the 10 MITRE categories
 
-  python select_cores.py --cores cores.jsonl --target 220
+  python select_cores.py --target 220
 
 Embeddings are cached in embeddings.json so re-running costs nothing.
 """

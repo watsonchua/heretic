@@ -16,7 +16,7 @@ unrelated MITRE categories is a wrapper, text that tracks the technique is the r
 
 Writes templates.json (the reviewable catalogue) and cores.jsonl (text + provenance).
 
-  python detemplate.py --sources ../../cyber-eval/sources --out .
+  python detemplate.py
 """
 import argparse,json,re
 from collections import Counter,defaultdict
