@@ -66,4 +66,8 @@ WildGuardMix, AdvBench, SORRY-Bench and XSTest require accepting their terms on 
 `download_sources.py` can fetch them. Without that the downloader reports
 `Access denied. This repository requires approval.`
 
+Gating is an access control, not a licence. WildGuardMix is gated and ODC-BY; AdvBench is gated
+and MIT. Both permit redistribution. Conversely CyberSecEval MITRE and ClearHarm are ungated but
+declare no licence at all, so they are the constrained ones. See METHODOLOGY.md section 10.
+
 `source_search.json` holds the measured CyberSecEval counts.

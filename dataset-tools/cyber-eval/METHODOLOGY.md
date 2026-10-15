@@ -461,10 +461,35 @@ it.
 
 ## 10. Licences
 
-StrongREJECT and HarmBench upstream MIT licences are saved under `sources/`. Cite StrongREJECT
-(arXiv 2402.10260), HarmBench (arXiv 2402.04249) and CyberSecEval (arXiv 2404.13161).
-WildGuardMix, AdvBench, XSTest and SORRY-Bench are gated and require accepting their terms on the
-Hub. ClearHarm and the CyberSecEval mirrors do not declare source licensing sufficient for this
-package to grant redistribution rights. SecQA and BeaverTails are non-commercial. Verify upstream
-terms before redistributing anything. No attack answers were generated and no datasets were
-published.
+Per source, as declared on the dataset card or in the repository. "Gated" controls who may
+download from the Hub and is **separate** from the licence, which governs what may be done with
+the data afterwards: WildGuardMix and AdvBench are both gated and both carry licences that
+permit redistribution.
+
+| Source | Licence | Gated | Redistribution |
+|---|---|---|---|
+| WildGuardMix | ODC-BY | yes | permitted, attribution required |
+| AdvBench | MIT | yes | permitted |
+| HarmBench | MIT | no | permitted |
+| StrongREJECT | MIT | no | permitted |
+| JBB-Behaviors | MIT | no | permitted |
+| MaliciousInstruct | CC-BY-SA-4.0 | no | permitted, attribution and share-alike |
+| OR-Bench | CC-BY-4.0 | no | permitted, attribution required |
+| SORRY-Bench | custom agreement | yes | **unread** — click-through terms, clause not reviewed |
+| CyberSecEval MITRE | **none declared** | no | **unclear** |
+| ClearHarm | **none declared** | no | **unclear** |
+
+Most of the corpus is redistributable. The two sources with no declared licence are
+CyberSecEval MITRE and ClearHarm, and SORRY-Bench's custom agreement has not been read beyond
+its opening paragraph. Those three are the only ones that should block publishing derived
+prompt text; establish their terms before doing so.
+
+Generated artefacts carrying verbatim source prompts are excluded from version control by
+default (`pairs.jsonl`, `cores.jsonl`, `harmful_pool.jsonl`, `control_pool.jsonl`,
+`selected.mitre.jsonl`, `calibration/items.jsonl`). This is a conservative default rather than
+a licensing conclusion: it keeps restricted text out of a repository whose visibility may change
+later, since git history retains a file even after it is deleted.
+
+Cite StrongREJECT (arXiv 2402.10260), HarmBench (arXiv 2402.04249) and CyberSecEval
+(arXiv 2404.13161). StrongREJECT and HarmBench upstream MIT licences are saved under `sources/`.
+No attack answers were generated and no datasets were published.
