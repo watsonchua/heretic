@@ -17,6 +17,10 @@
 /selected.mitre.jsonl
 /screened/
 /calibration/
+# ...except the calibration reports, which are pure statistics and are the evidence for every
+# threshold in the gates. No prompt text, so the redistribution concern does not apply.
+!/calibration/human_harm.json
+!/calibration/report.json
 
 # Gate answer cache, regenerable.
 /gates.cache.json
