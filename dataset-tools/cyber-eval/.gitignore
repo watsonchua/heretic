@@ -16,9 +16,11 @@
 /cores.jsonl
 /selected.mitre.jsonl
 /screened/
-/calibration/
-# ...except the calibration reports, which are pure statistics and are the evidence for every
-# threshold in the gates. No prompt text, so the redistribution concern does not apply.
+# Exclude the CONTENTS, not the directory: git does not descend into an excluded directory,
+# so a negation inside one never takes effect.
+/calibration/*
+# The calibration reports are pure statistics and are the evidence for every threshold in the
+# gates. No prompt text, so the redistribution concern does not apply to them.
 !/calibration/human_harm.json
 !/calibration/report.json
 
