@@ -4,6 +4,21 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 
+from .config import QuantizationMethod
+
+GLM_PACKED_MODEL_TYPES = frozenset({"glm4_moe_lite", "glm_moe_dsa"})
+
+
+def validate_glm_quantization(model_type, quantization, checkpoint_quantization=None):
+    if model_type not in GLM_PACKED_MODEL_TYPES:
+        return
+    if quantization != QuantizationMethod.NONE or checkpoint_quantization:
+        raise ValueError(
+            "GLM packed expert support requires unquantized weights and "
+            "quantization='none'. For GLM-5.3, use zai-org/GLM-5.3-BF16; "
+            "setting dtype to bfloat16 does not dequantize an FP8 checkpoint."
+        )
+
 
 class GlmExpert(nn.Module):
     def __init__(self, weight):

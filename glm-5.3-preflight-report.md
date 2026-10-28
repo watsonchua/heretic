@@ -36,8 +36,27 @@ Result: all 31 tests passed in 0.199 seconds. This includes 27 existing unit tes
 
 The upstream merge introduced duplicate shared-expert discovery. Removing the duplicate initially changed GLM-4.7 module order and failed its expert update/export test. The final fix keeps one shared-expert discovery block before routed-expert discovery. The GLM-4.7 adapter/reset/merge/export regression now passes.
 
+## Integration follow-up
+
+The initial results above describe the pre-integration baseline. The implementation now extends the explicit packed-GLM architecture guards to `glm_moe_dsa` in discovery, adapter preparation, and merged-only export. The expert wrapper and native repack calculation are reused unchanged.
+
+A shared validation helper rejects requested quantization and checkpoint quantization metadata. `Model.__init__` checks checkpoint config before tokenizer or weight loading, so the FP8 repository fails early with guidance to use `zai-org/GLM-5.3-BF16`.
+
+Added `tests/test_glm_moe_dsa.py` and updated the preflight discovery assertion to require routed-expert coverage. The user ran the same test-suite command after these changes: **all 35 tests passed in 0.338 seconds** on CPU, with the same package versions. This includes the existing GLM-4.7 regression, four updated preflight tests, and four new GLM-5.3 integration tests.
+
+Confirmed integration coverage:
+
+- Tiny-model discovery finds three attention projections and 11 MLP projections: one dense, two shared, and eight routed.
+- Zero-initialized adapters preserve native logits.
+- A routed expert's rank-one adapter matches a deterministic weight-update reference.
+- Reset clears the adapter's output factor and restores baseline logits; the update can then be reapplied.
+- Merge produces the expected native packed expert weight, removes expert views and private adapter/projection paths, and marks the model for reload.
+- Tiny native save/reload preserves modified logits and supports short generation.
+- FP8 metadata is rejected before tokenizer or checkpoint weight loading; requested quantization is rejected by both discovery and adapter preparation.
+- Standalone adapters are rejected; default and explicit merged export select native merged output.
+
+Lint and formatting passed for the helper and new/updated test files. These tests do not run a scored optimizer trial or prove full-model CUDA, BF16, offload, or distributed behavior.
+
 ## Remaining work
 
-Extend the explicit architecture guards and adapter/export policy to `glm_moe_dsa`, with tiny end-to-end adapter/reset/merge/export tests and quantization rejection. The tests above manually install expert views; they do not exercise GLM-5.3 adapters through Heretic.
-
-Then validate CUDA/BF16 and small multi-GPU placement. Full BF16 loading and optimization remain gated by the 8×B300 hardware plan in `glm-5.3-plan.md`. Full-normalization and ARA must be validated separately.
+Validate CUDA/BF16 and small multi-GPU placement. Full BF16 loading and optimization remain gated by the 8×B300 hardware plan in `glm-5.3-plan.md`. Full-normalization and ARA must be validated separately. No full checkpoint weights have been downloaded.

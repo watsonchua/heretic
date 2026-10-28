@@ -87,6 +87,7 @@ from .config import (
     QuantizationMethod,
 )
 from .evaluator import Evaluator
+from .glm import GLM_PACKED_MODEL_TYPES
 from .model import Model, get_model_class
 from .modifier import load_and_init_modifiers
 from .plugin import Context, is_builtin_plugin
@@ -122,7 +123,7 @@ def obtain_export_strategy(
     Returns an export strategy, or None if cancelled.
     """
 
-    if model.model.config.model_type == "glm4_moe_lite":
+    if model.model.config.model_type in GLM_PACKED_MODEL_TYPES:
         if settings.export_strategy == ExportStrategy.ADAPTER:
             raise ValueError(
                 "GLM expert views require merged export; standalone PEFT adapters "

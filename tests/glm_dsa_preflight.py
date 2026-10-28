@@ -140,7 +140,7 @@ class GlmDsaPreflightTests(unittest.TestCase):
             with torch.no_grad():
                 torch.testing.assert_close(restored(self.tokens).logits, baseline)
 
-    def test_current_heretic_omits_routed_experts(self):
+    def test_heretic_discovers_routed_experts(self):
         model = Model.__new__(Model)
         model.model = self.native
         model.settings = Settings.model_construct(
@@ -148,15 +148,13 @@ class GlmDsaPreflightTests(unittest.TestCase):
         )
         self.assertEqual(len(model.get_layers()), 3)
         self.assertEqual(len(model.get_layer_modules(0)["mlp.down_proj"]), 1)
-        # Record the current blocker, not a claim of complete integration.
         modules = model.get_layer_modules(1)["mlp.down_proj"]
-        self.assertEqual(len(modules), 1)
+        self.assertEqual(len(modules), 5)
+        self.assertEqual(len({id(module) for module in modules}), 5)
         self.assertIs(
             modules[0], self.native.model.layers[1].mlp.shared_experts.down_proj
         )
-        self.assertNotIsInstance(
-            self.native.model.layers[1].mlp.experts, GlmExpertViews
-        )
+        self.assertIsInstance(self.native.model.layers[1].mlp.experts, GlmExpertViews)
 
 
 if __name__ == "__main__":
