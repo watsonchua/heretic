@@ -498,9 +498,9 @@ class Model:
         with suppress(Exception):
             try_add("mlp.down_proj", layer.mlp.down_proj)  # ty: ignore[unresolved-attribute]
 
-        # GLM shared experts.
-        with suppress(AttributeError):
-            try_add("mlp.down_proj", layer.mlp.shared_experts.down_proj)
+        # Shared experts of MoE models (e.g. DeepSeek V4 and GLM).
+        with suppress(Exception):
+            try_add("mlp.down_proj", layer.mlp.shared_experts.down_proj)  # ty: ignore[unresolved-attribute]
 
         if isinstance(
             getattr(getattr(layer, "mlp", None), "experts", None), GlmExpertViews
@@ -512,10 +512,6 @@ class Model:
             # Some MoE models (e.g. Qwen3).
             for expert in layer.mlp.experts:  # ty:ignore[not-iterable, unresolved-attribute]
                 try_add("mlp.down_proj", expert.down_proj)  # ty: ignore[unresolved-attribute]
-
-        # Shared experts of MoE models (e.g. DeepSeek V4 and GLM 5.3).
-        with suppress(Exception):
-            try_add("mlp.down_proj", layer.mlp.shared_experts.down_proj)  # ty: ignore[unresolved-attribute]
 
         # Phi-3.5-MoE (and possibly others).
         with suppress(Exception):
