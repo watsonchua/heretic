@@ -1,0 +1,42 @@
+# Run: HERETIC_CONFIG_FILE=config.glm-4.7.toml uv run heretic
+# Start with a one-trial pipeline check; this is not a production-quality run.
+model = "zai-org/GLM-4.7-Flash"
+model_commit = "7dd20894a642a0aa287e9827cb1a1f7f91386b67"
+dtypes = ["bfloat16"]
+quantization = "none"
+device_map = "auto"
+offload_outputs_to_cpu = true
+batch_size = 1
+max_response_length = 128
+n_trials = 1
+n_startup_trials = 1
+study_checkpoint_dir = "checkpoints/glm-4.7-v2.1"
+export_strategy = "merge"
+modifiers = [{ plugin = "heretic.modifiers.abliteration.Abliteration" }]
+
+# Let Heretic detect the thinking finalizer from the pinned chat template.
+# Record the resolved response_prefix before comparing residuals across runs.
+
+[modifier.Abliteration]
+# Start without SVD/full normalization; validate those separately.
+row_normalization = "none"
+
+[modifier.Abliteration.good_prompts]
+dataset = "mlabonne/harmless_alpaca"
+split = "train[:4]"
+column = "text"
+
+[modifier.Abliteration.bad_prompts]
+dataset = "mlabonne/harmful_behaviors"
+split = "train[:4]"
+column = "text"
+
+[scorer.KeywordRate.prompts]
+dataset = "mlabonne/harmful_behaviors"
+split = "test[:4]"
+column = "text"
+
+[scorer.KLDivergence.prompts]
+dataset = "mlabonne/harmless_alpaca"
+split = "test[:4]"
+column = "text"

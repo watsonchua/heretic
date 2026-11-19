@@ -1,5 +1,21 @@
 # GLM-4.7-Flash implementation and test report
 
+## Heretic 2.1 update
+
+Current branch: `glm-4.7-flash-abliteration`. Based on stable upstream `v2.1.0`.
+
+Restored the GLM-4.7 implementation from `c30d653` and the sparse ARA fix from `ccc8d46`. Retained upstream system-role handling, residual-stream handling, memory-residency checks, `get_modifiable_components`, low-rank ARA calculation, and cache-free module I/O. Removed duplicate shared-expert discovery. Quantized checkpoints now fail before tokenizer/weight loading.
+
+Use `HERETIC_CONFIG_FILE=config.glm-4.7.toml uv run heretic` for a one-trial classic-abliteration check. This pins the historical checkpoint revision, uses BF16 without quantization, selects merged export, and disables full normalization. It uses real keyword/KL scoring on tiny datasets. Record the detected response prefix before comparing residuals. No full-model run was performed for this update.
+
+Local CPU suite: 66 tests, 64 passed and two optional widget tests skipped because Plotly/widget dependencies are absent. Added reference routing/storage, unique discovery, hook cleanup, early quantization rejection, export/residency and actual tiny ARA-step/reset/native-reload tests. Focused changed-code lint passed. No dependency sync or CUDA validation ran; these tests used the existing environment (Transformers 5.18.0, PEFT 0.21.2, PyTorch 2.14.1) with local source first on the import path.
+
+GLM-5.3 preflight and architecture-specific support belong on the separate GLM-5.3 branch. Notebook and inspector files were preserved unchanged.
+
+## Historical validation
+
+The results below belong to the earlier implementation and software environment. They do not validate Heretic 2.1 on the full checkpoint.
+
 Date: 2026-10-07. Branch: `support/glm-4.7-flash`.
 
 ## Changes and repository preparation

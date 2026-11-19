@@ -29,7 +29,7 @@ from transformers.generation import (
 )
 
 from .config import QuantizationMethod, Settings
-from .glm import GlmExpertViews
+from .glm import GLM_PACKED_MODEL_TYPES, GlmExpertViews, validate_glm_quantization
 from .system import empty_cache
 from .utils import Prompt, batchify, format_exception, print
 
@@ -149,6 +149,15 @@ class Model:
         self.revision_kwargs = {}
         if settings.model_commit is not None:
             self.revision_kwargs["revision"] = settings.model_commit
+
+        checkpoint_config, _ = PretrainedConfig.get_config_dict(
+            settings.model, **self.revision_kwargs
+        )
+        validate_glm_quantization(
+            checkpoint_config.get("model_type"),
+            settings.quantization,
+            checkpoint_config.get("quantization_config"),
+        )
 
         print()
         print(f"Loading model [bold]{settings.model}[/]...")
@@ -280,11 +289,12 @@ class Model:
         # Guard against calling this method at the wrong time.
         assert isinstance(self.model, PreTrainedModel)
 
-        if self.model.config.model_type == "glm4_moe_lite":
-            if self.settings.quantization != QuantizationMethod.NONE:
-                raise ValueError(
-                    "GLM packed expert support requires quantization='none'"
-                )
+        if self.model.config.model_type in GLM_PACKED_MODEL_TYPES:
+            validate_glm_quantization(
+                self.model.config.model_type,
+                self.settings.quantization,
+                getattr(self.model.config, "quantization_config", None),
+            )
             for raw_layer in self.get_layers():
                 layer = cast(Any, raw_layer)
                 if hasattr(layer.mlp, "experts") and not isinstance(
@@ -515,11 +525,12 @@ class Model:
     def get_layer_modules(self, layer_index: int) -> dict[str, list[Module]]:
         layer = cast(Any, self.get_layers()[layer_index])
 
-        if self.model.config.model_type == "glm4_moe_lite":
-            if self.settings.quantization != QuantizationMethod.NONE:
-                raise ValueError(
-                    "GLM packed expert support requires quantization='none'"
-                )
+        if self.model.config.model_type in GLM_PACKED_MODEL_TYPES:
+            validate_glm_quantization(
+                self.model.config.model_type,
+                self.settings.quantization,
+                getattr(self.model.config, "quantization_config", None),
+            )
             packed = getattr(layer.mlp, "experts", None)
             if packed is not None and not isinstance(packed, GlmExpertViews):
                 layer.mlp.experts = GlmExpertViews(packed)
@@ -569,10 +580,6 @@ class Model:
             # Some MoE models (e.g. Qwen3).
             for expert in layer.mlp.experts:  # ty:ignore[not-iterable, unresolved-attribute]
                 try_add("mlp.down_proj", expert.down_proj)  # ty: ignore[unresolved-attribute]
-
-        # Shared experts of MoE models (e.g. DeepSeek V4 and GLM 5.3).
-        with suppress(Exception):
-            try_add("mlp.down_proj", layer.mlp.shared_experts.down_proj)  # ty: ignore[unresolved-attribute]
 
         # Shared expert of MoE models (e.g. Qwen4-Exp).
         with suppress(Exception):

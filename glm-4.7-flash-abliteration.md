@@ -1,5 +1,13 @@
 # GLM-4.7-Flash support and evaluation plan
 
+## Current status: Heretic 2.1
+
+The implementation now exposes packed routed projections through module views, supports dense/shared/routed discovery and native merged export, and rejects quantization. See `glm-4.7-flash-report.md` for historical GPU evidence and current CPU regressions. The original checklist below remains a full-checkpoint acceptance plan, not a claim that every gate passed.
+
+Use `config.glm-4.7.toml` to select classic Abliteration explicitly; upstream defaults to ARA. Standalone adapters are unsupported. Routed module I/O contains selected-token rows, not one final-token row per prompt. ARA skips experts missing either prompt distribution. Full normalization, production ARA, multi-GPU placement and Heretic 2.1 full-model validation remain separate gates. All weights must remain resident; output offload is not weight offload.
+
+GLM-5.3 preflight is maintained separately on `explore/glm-5.3-config` and the aligned `worktree-glm-5.3-preflight` branch.
+
 ## Goal
 
 Add support for running Heretic's complete abliteration workflow on `zai-org/GLM-4.7-Flash`, including model load, residual and module-I/O collection, optimization, adapter merge/export, and post-change evaluation. Make all work on a dedicated branch and keep the existing default behavior for other architectures unchanged.
