@@ -6,7 +6,7 @@ from torch import nn
 
 from .config import QuantizationMethod
 
-GLM_PACKED_MODEL_TYPES = frozenset({"glm4_moe_lite"})
+GLM_PACKED_MODEL_TYPES = frozenset({"glm4_moe_lite", "glm_moe_dsa"})
 
 
 def validate_glm_quantization(model_type, quantization, checkpoint_quantization=None):
